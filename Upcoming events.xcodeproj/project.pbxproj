@@ -13,9 +13,17 @@
 		22048B4B2C6924EB00361F23 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */; };
 		22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */; };
 		22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */; };
+		22641B2D2C79CFE7007F1C39 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22641B2C2C79CFE7007F1C39 /* Poppins-Regular.ttf */; };
+		22641B312C79CFF8007F1C39 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22641B302C79CFF7007F1C39 /* Poppins-Medium.ttf */; };
+		22641B332C79D377007F1C39 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22641B322C79D377007F1C39 /* Poppins-SemiBold.ttf */; };
+		22641B362C7A257D007F1C39 /* WeekContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22641B352C7A257D007F1C39 /* WeekContainerView.swift */; };
+		22641B382C7A259B007F1C39 /* MonthContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22641B372C7A259B007F1C39 /* MonthContainerView.swift */; };
+		22641B3A2C7A25B2007F1C39 /* YearContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22641B392C7A25B2007F1C39 /* YearContainerView.swift */; };
+		22641B3C2C7A25E5007F1C39 /* CustomContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22641B3B2C7A25E5007F1C39 /* CustomContainerView.swift */; };
+		22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22641B3E2C7A2B40007F1C39 /* CalendarInfoMode.swift */; };
 		227D019B2C68F12600ADF63F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227D019A2C68F12600ADF63F /* AppDelegate.swift */; };
 		227D019D2C68F12600ADF63F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227D019C2C68F12600ADF63F /* SceneDelegate.swift */; };
-		227D019F2C68F12600ADF63F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227D019E2C68F12600ADF63F /* ViewController.swift */; };
+		227D019F2C68F12600ADF63F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227D019E2C68F12600ADF63F /* MainViewController.swift */; };
 		227D01A42C68F12700ADF63F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 227D01A32C68F12700ADF63F /* Assets.xcassets */; };
 		227D01A72C68F12700ADF63F /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 227D01A62C68F12700ADF63F /* Base */; };
 /* End PBXBuildFile section */
@@ -44,10 +52,18 @@
 		22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+CustomFont.swift"; sourceTree = "<group>"; };
 		22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+CustomFont.swift"; sourceTree = "<group>"; };
+		22641B2C2C79CFE7007F1C39 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Regular.ttf"; sourceTree = "<group>"; };
+		22641B302C79CFF7007F1C39 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Medium.ttf"; sourceTree = "<group>"; };
+		22641B322C79D377007F1C39 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		22641B352C7A257D007F1C39 /* WeekContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekContainerView.swift; sourceTree = "<group>"; };
+		22641B372C7A259B007F1C39 /* MonthContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthContainerView.swift; sourceTree = "<group>"; };
+		22641B392C7A25B2007F1C39 /* YearContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearContainerView.swift; sourceTree = "<group>"; };
+		22641B3B2C7A25E5007F1C39 /* CustomContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContainerView.swift; sourceTree = "<group>"; };
+		22641B3E2C7A2B40007F1C39 /* CalendarInfoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarInfoMode.swift; sourceTree = "<group>"; };
 		227D01972C68F12600ADF63F /* Upcoming events.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Upcoming events.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		227D019A2C68F12600ADF63F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		227D019C2C68F12600ADF63F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		227D019E2C68F12600ADF63F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		227D019E2C68F12600ADF63F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		227D01A32C68F12700ADF63F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		227D01A62C68F12700ADF63F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		227D01A82C68F12700ADF63F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -121,6 +137,9 @@
 		22592F2A2C68F6AA00820FA8 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				22641B2C2C79CFE7007F1C39 /* Poppins-Regular.ttf */,
+				22641B302C79CFF7007F1C39 /* Poppins-Medium.ttf */,
+				22641B322C79D377007F1C39 /* Poppins-SemiBold.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -135,9 +154,28 @@
 		22592F2C2C68F72C00820FA8 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				227D019E2C68F12600ADF63F /* ViewController.swift */,
+				227D019E2C68F12600ADF63F /* MainViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		22641B342C7A2544007F1C39 /* Subviews */ = {
+			isa = PBXGroup;
+			children = (
+				22641B352C7A257D007F1C39 /* WeekContainerView.swift */,
+				22641B372C7A259B007F1C39 /* MonthContainerView.swift */,
+				22641B392C7A25B2007F1C39 /* YearContainerView.swift */,
+				22641B3B2C7A25E5007F1C39 /* CustomContainerView.swift */,
+			);
+			path = Subviews;
+			sourceTree = "<group>";
+		};
+		22641B3D2C7A2B0E007F1C39 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				22641B3E2C7A2B40007F1C39 /* CalendarInfoMode.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		227D018E2C68F12600ADF63F = {
@@ -168,7 +206,9 @@
 				22592F282C68F68800820FA8 /* Extensions */,
 				22592F292C68F69B00820FA8 /* Resources */,
 				22592F2B2C68F6C600820FA8 /* Network */,
+				22641B3D2C7A2B0E007F1C39 /* Models */,
 				22592F2C2C68F72C00820FA8 /* ViewControllers */,
+				22641B342C7A2544007F1C39 /* Subviews */,
 			);
 			path = "Upcoming events";
 			sourceTree = "<group>";
@@ -277,8 +317,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22641B332C79D377007F1C39 /* Poppins-SemiBold.ttf in Resources */,
+				22641B2D2C79CFE7007F1C39 /* Poppins-Regular.ttf in Resources */,
 				227D01A42C68F12700ADF63F /* Assets.xcassets in Resources */,
 				227D01A72C68F12700ADF63F /* Base in Resources */,
+				22641B312C79CFF8007F1C39 /* Poppins-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,14 +346,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22641B362C7A257D007F1C39 /* WeekContainerView.swift in Sources */,
 				22048B4B2C6924EB00361F23 /* UIColor+Extension.swift in Sources */,
 				22048B492C6924D200361F23 /* UIViewController+KeyboardHandling.swift in Sources */,
-				227D019F2C68F12600ADF63F /* ViewController.swift in Sources */,
+				22641B382C7A259B007F1C39 /* MonthContainerView.swift in Sources */,
+				227D019F2C68F12600ADF63F /* MainViewController.swift in Sources */,
+				22641B3A2C7A25B2007F1C39 /* YearContainerView.swift in Sources */,
 				227D019B2C68F12600ADF63F /* AppDelegate.swift in Sources */,
 				22048B472C6924BE00361F23 /* UIView+Constraints.swift in Sources */,
 				227D019D2C68F12600ADF63F /* SceneDelegate.swift in Sources */,
 				22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */,
+				22641B3C2C7A25E5007F1C39 /* CustomContainerView.swift in Sources */,
 				22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */,
+				22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */,
 				22048B452C69249D00361F23 /* AppConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
