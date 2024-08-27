@@ -13,6 +13,8 @@
 		22048B4B2C6924EB00361F23 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */; };
 		22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */; };
 		22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */; };
+		223429962C7B56D900D906E4 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223429952C7B56D900D906E4 /* CustomTableViewCell.swift */; };
+		22541E882C7DEBE400EA124F /* EventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22541E872C7DEBE400EA124F /* EventModel.swift */; };
 		22641B2D2C79CFE7007F1C39 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22641B2C2C79CFE7007F1C39 /* Poppins-Regular.ttf */; };
 		22641B312C79CFF8007F1C39 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22641B302C79CFF7007F1C39 /* Poppins-Medium.ttf */; };
 		22641B332C79D377007F1C39 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22641B322C79D377007F1C39 /* Poppins-SemiBold.ttf */; };
@@ -52,6 +54,8 @@
 		22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+CustomFont.swift"; sourceTree = "<group>"; };
 		22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+CustomFont.swift"; sourceTree = "<group>"; };
+		223429952C7B56D900D906E4 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
+		22541E872C7DEBE400EA124F /* EventModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModel.swift; sourceTree = "<group>"; };
 		22641B2C2C79CFE7007F1C39 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Regular.ttf"; sourceTree = "<group>"; };
 		22641B302C79CFF7007F1C39 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		22641B322C79D377007F1C39 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -166,6 +170,7 @@
 				22641B372C7A259B007F1C39 /* MonthContainerView.swift */,
 				22641B392C7A25B2007F1C39 /* YearContainerView.swift */,
 				22641B3B2C7A25E5007F1C39 /* CustomContainerView.swift */,
+				223429952C7B56D900D906E4 /* CustomTableViewCell.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -174,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				22641B3E2C7A2B40007F1C39 /* CalendarInfoMode.swift */,
+				22541E872C7DEBE400EA124F /* EventModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -352,12 +358,14 @@
 				22641B382C7A259B007F1C39 /* MonthContainerView.swift in Sources */,
 				227D019F2C68F12600ADF63F /* MainViewController.swift in Sources */,
 				22641B3A2C7A25B2007F1C39 /* YearContainerView.swift in Sources */,
+				223429962C7B56D900D906E4 /* CustomTableViewCell.swift in Sources */,
 				227D019B2C68F12600ADF63F /* AppDelegate.swift in Sources */,
 				22048B472C6924BE00361F23 /* UIView+Constraints.swift in Sources */,
 				227D019D2C68F12600ADF63F /* SceneDelegate.swift in Sources */,
 				22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */,
 				22641B3C2C7A25E5007F1C39 /* CustomContainerView.swift in Sources */,
 				22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */,
+				22541E882C7DEBE400EA124F /* EventModel.swift in Sources */,
 				22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */,
 				22048B452C69249D00361F23 /* AppConstants.swift in Sources */,
 			);

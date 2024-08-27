@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import EventKit
+//import EventKitUI
 
 class MainViewController: UIViewController {
     
@@ -21,10 +23,16 @@ class MainViewController: UIViewController {
     
     private var infoModesButtons: [UIButton] = []
     private var selectedInfoMode: CalendarInfoMode = .week
+    
+    private let eventStore = EKEventStore()
+    
+    // в модель
+    private var weekEvents: [EventModel] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        requestCalendarAccess()
     }
     
     // MARK: - @objc methods
@@ -51,6 +59,7 @@ class MainViewController: UIViewController {
         
         switch mode {
         case .week:
+            fetchEventsForNextWeek()
             weekContainerView.isHidden = false
         case .month:
             monthContainerView.isHidden = false
@@ -61,6 +70,57 @@ class MainViewController: UIViewController {
         }
         
         selectedInfoMode = mode
+    }
+    
+    private func requestCalendarAccess() {
+        eventStore.requestAccess(to: .event) { [weak self] (granted, error) in
+            DispatchQueue.main.async {
+                if granted {
+ //  додай сюди метод для оновлення ЮІ
+                } else {
+                    self?.showCalendarAccessAlert()
+                }
+            }
+        }
+    }
+    
+    private func fetchEventsForNextWeek() {
+        let startDate = Date()
+        let endDate = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: startDate)
+        
+        guard let endDate = endDate else { return }
+        let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: nil)
+        let ekEvents = eventStore.events(matching: predicate)
+        
+        weekEvents.removeAll()
+        
+        for ekEvent in ekEvents {
+            let event = EventModel(title: ekEvent.title ?? "No title", startDate: ekEvent.startDate, endDate: ekEvent.endDate)
+            weekEvents.append(event)
+        }
+//      метод винести в модель
+        weekContainerView.updateEvents(weekEvents)
+    }
+    
+    private func showCalendarAccessAlert() {
+        let alertController = UIAlertController(
+            title: "Access Denied",
+            message: "This app does not have access to your calendar. Please go to Settings and enable access.",
+            preferredStyle: .alert
+        )
+
+        let settingsAction = UIAlertAction(title: "Settings", style: .default) { _ in
+            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(settingsURL)
+            }
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        alertController.addAction(settingsAction)
+        alertController.addAction(cancelAction)
+
+        self.present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -105,7 +165,12 @@ extension MainViewController {
         addButton.tintColor = UIColor.hex5856D6
         
         view.addSubview(addButton)
+//       addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
+    
+//    @objc private func addButtonTapped () {
+//        let vc = EKEventViewController()
+//    }
     
     private func setupInfoModeButtonsStackView() {
         infoModeButtonsStackView.axis = .horizontal
