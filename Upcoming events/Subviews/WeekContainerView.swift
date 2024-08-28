@@ -15,6 +15,7 @@ class WeekContainerView: UIView {
     
     private let eventStore = EKEventStore()
     
+    private var calendarManager = CalendarManager()
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -27,27 +28,11 @@ class WeekContainerView: UIView {
         setupUI()
     }
     
-    func updateEvents(_ newEvents: [EventModel]) {
+    // MARK: - Public methods
+    
+    func updateWeekEvents(_ newEvents: [EventModel]) {
         self.events = newEvents
         presentEventsTable.reloadData()
-    }
-    
-    // MARK: - Private methods
-    
-    private func updateCurrentWeekLabel() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d"
-        
-        let calendar = Calendar.current
-        let today = Date()
-        let weekFromToday = calendar.date(byAdding: .day, value: 6, to: today) ?? today
-        
-        let todayString = dateFormatter.string(from: today)
-        let weekFromTodayString = dateFormatter.string(from: weekFromToday)
-        
-        let year = calendar.component(.year, from: today)
-        
-        currentWeekLabel.text = "\(todayString) - \(weekFromTodayString), \(year)"
     }
 }
 
@@ -79,18 +64,15 @@ extension WeekContainerView {
         self.backgroundColor = .white
         setupTitleLabel()
         setupTable()
-        
         setupConstraints()
-        updateCurrentWeekLabel()
     }
     
     private func setupTitleLabel() {
         currentWeekLabel.accessibilityIdentifier = "currentWeekLabel"
-        currentWeekLabel.text = "Current week"
+        currentWeekLabel.text = calendarManager.getCurrentPeriodLabel(for: .weekOfMonth)
         currentWeekLabel.textColor = .black
         currentWeekLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentWeekLabel.textAlignment = .left
-        
         self.addSubview(currentWeekLabel)
     }
     
@@ -100,7 +82,6 @@ extension WeekContainerView {
         presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: "CustomCell")
         presentEventsTable.separatorStyle = .none
         presentEventsTable.backgroundColor = .white
-        
         self.addSubview(presentEventsTable)
     }
     

@@ -91,7 +91,7 @@ class CustomTableViewCell: UITableViewCell {
     private func setupConstraints() {
         eventNameLabel.addConstraints(to_view: self, [
             .leading(anchor: self.leadingAnchor, constant: 32),
-            .width(constant: 150),
+            .width(constant: 200),
         ])
         
         remainingTimeLabel.addConstraints(to_view: self, [

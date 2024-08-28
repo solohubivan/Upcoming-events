@@ -7,7 +7,6 @@
 
 import UIKit
 import EventKit
-//import EventKitUI
 
 class MainViewController: UIViewController {
     
@@ -23,15 +22,11 @@ class MainViewController: UIViewController {
     
     private var infoModesButtons: [UIButton] = []
     private var selectedInfoMode: CalendarInfoMode = .week
-    
     private let eventStore = EKEventStore()
-    
-    // в модель
-    private var weekEvents: [EventModel] = []
+    private var calendarManager = CalendarManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
         requestCalendarAccess()
     }
     
@@ -59,12 +54,23 @@ class MainViewController: UIViewController {
         
         switch mode {
         case .week:
-            fetchEventsForNextWeek()
-            weekContainerView.isHidden = false
+            calendarManager.fetchEvents(for: .weekOfMonth) { [weak self] in
+                guard let self = self else { return }
+                self.weekContainerView.updateWeekEvents(self.calendarManager.getEvents())
+                self.weekContainerView.isHidden = false
+            }
         case .month:
-            monthContainerView.isHidden = false
+            calendarManager.fetchEvents(for: .month) { [weak self] in
+                guard let self = self else { return }
+                self.monthContainerView.updateMonthEvents(self.calendarManager.getEvents())
+                self.monthContainerView.isHidden = false
+            }
         case .year:
-            yearContainerView.isHidden = false
+            calendarManager.fetchEvents(for: .year) { [weak self] in
+                guard let self = self else { return }
+                self.yearContainerView.updateYearEvents(self.calendarManager.getEvents())
+                self.yearContainerView.isHidden = false
+            }
         case .custom:
             customContainerView.isHidden = false
         }
@@ -76,30 +82,12 @@ class MainViewController: UIViewController {
         eventStore.requestAccess(to: .event) { [weak self] (granted, error) in
             DispatchQueue.main.async {
                 if granted {
- //  додай сюди метод для оновлення ЮІ
+                    self?.setupUI()
                 } else {
                     self?.showCalendarAccessAlert()
                 }
             }
         }
-    }
-    
-    private func fetchEventsForNextWeek() {
-        let startDate = Date()
-        let endDate = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: startDate)
-        
-        guard let endDate = endDate else { return }
-        let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: nil)
-        let ekEvents = eventStore.events(matching: predicate)
-        
-        weekEvents.removeAll()
-        
-        for ekEvent in ekEvents {
-            let event = EventModel(title: ekEvent.title ?? "No title", startDate: ekEvent.startDate, endDate: ekEvent.endDate)
-            weekEvents.append(event)
-        }
-//      метод винести в модель
-        weekContainerView.updateEvents(weekEvents)
     }
     
     private func showCalendarAccessAlert() {
