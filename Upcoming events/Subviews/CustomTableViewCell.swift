@@ -13,6 +13,8 @@ class CustomTableViewCell: UITableViewCell {
     private var eventNameLabel = UILabel()
     private var remainingTimeLabel = UILabel()
     
+    private var calendarManager = CalendarManager()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
@@ -31,27 +33,12 @@ class CustomTableViewCell: UITableViewCell {
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 4, left: margin, bottom: 4, right: margin))
     }
     
-//  переіменуй метод
-    func configure(with event: EventModel) {
+    // MARK: - Public methods
+    
+    func configureCell(with event: EventModel) {
         eventNameLabel.text = event.title
         let remainingTime = event.startDate.timeIntervalSince(Date())
-        remainingTimeLabel.text = formatTime(remainingTime)
-    }
-//  винести метод в модель
-    private func formatTime(_ interval: TimeInterval) -> String {
-        let days = Int(interval) / 86400
-        let hours = (Int(interval) % 86400) / 3600
-        let minutes = (Int(interval) % 3600) / 60
-        
-        if days > 0 {
-            return "\(days)d \(hours)h \(minutes)m"
-        } else if hours > 0 {
-            return "\(hours)h \(minutes)m"
-        } else if minutes > 0 {
-            return "\(minutes)m"
-        } else {
-            return "less than a min"
-        }
+        remainingTimeLabel.text = calendarManager.formatTimeForLabel(remainingTime)
     }
 
     // MARK: - Setup UI
@@ -66,7 +53,6 @@ class CustomTableViewCell: UITableViewCell {
         self.backgroundColor = .white
         setupEventNameLabel()
         setupRemainingTimeLabel()
-        
         setupConstraints()
     }
     

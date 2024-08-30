@@ -47,7 +47,7 @@ extension MonthContainerView: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as? CustomTableViewCell ?? CustomTableViewCell()
         
         let event = events[indexPath.row]
-        cell.configure(with: event)
+        cell.configureCell(with: event)
         
         return cell
     }
