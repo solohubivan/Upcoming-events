@@ -14,6 +14,8 @@ class CustomTableViewCell: UITableViewCell {
     private var remainingTimeLabel = UILabel()
     
     private var calendarManager = CalendarManager()
+    private var timer: Timer?
+    private var event: EventModel?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,12 +35,33 @@ class CustomTableViewCell: UITableViewCell {
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 4, left: margin, bottom: 4, right: margin))
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func updateRemainingTime() {
+        guard let event = event else { return }
+        let remainingTime = event.startDate.timeIntervalSince(Date())
+        remainingTimeLabel.text = calendarManager.formatTimeForLabel(remainingTime)
+    }
+    
     // MARK: - Public methods
     
     func configureCell(with event: EventModel) {
+        self.event = event
         eventNameLabel.text = event.title
-        let remainingTime = event.startDate.timeIntervalSince(Date())
-        remainingTimeLabel.text = calendarManager.formatTimeForLabel(remainingTime)
+        startTimer()
+    }
+
+    // MARK: - Private methods
+    
+    private func startTimer() {
+        updateRemainingTime()
+        timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateRemainingTime), userInfo: nil, repeats: true)
     }
 
     // MARK: - Setup UI

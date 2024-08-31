@@ -9,13 +9,12 @@ import UIKit
 import EventKit
 import FSCalendar
 
-// винеси звідси енам в окр файл
 enum TimeMode {
     case am
     case pm
 }
 
-class CustomContainerView: UIView, FSCalendarDataSource, FSCalendarDelegate {
+class CustomContainerView: UIView {
     
     private var selectDataView = UIView()
     private var monthLabel = UILabel()
@@ -30,14 +29,43 @@ class CustomContainerView: UIView, FSCalendarDataSource, FSCalendarDelegate {
     private let eventStore = EKEventStore()
     private var events: [EventModel] = []
     
+    private var timeUpdateTimer: Timer?
+    private var currentMonth: Date
+    
     override init(frame: CGRect) {
+        currentMonth = Date()
         super.init(frame: frame)
         setupUI()
+        startTimerForUpdatingTime()
     }
     
     required init?(coder: NSCoder) {
+        currentMonth = Date()
         super.init(coder: coder)
         setupUI()
+        startTimerForUpdatingTime()
+    }
+    
+    deinit {
+        timeUpdateTimer?.invalidate()
+    }
+
+    // MARK: - Buttons actions
+    
+    @objc private func nextMonthButtonTapped() {
+        guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: calendar.currentPage) else { return }
+        calendar.setCurrentPage(nextMonth, animated: true)
+    }
+
+    @objc private func previousMonthButtonTapped() {
+        guard let previousMonth = Calendar.current.date(byAdding: .month, value: -1, to: calendar.currentPage) else { return }
+        if Calendar.current.compare(previousMonth, to: currentMonth, toGranularity: .month) != .orderedAscending {
+            calendar.setCurrentPage(previousMonth, animated: true)
+        }
+    }
+    
+    @objc private func updateTimeButton() {
+        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(amPmSwitcher: timeModeSegmCntrl), for: .normal)
     }
     
     // MARK: - Public methods
@@ -45,10 +73,23 @@ class CustomContainerView: UIView, FSCalendarDataSource, FSCalendarDelegate {
     func updateCustomEvents(_ newEvents: [EventModel]) {
         self.events = newEvents
         presentEventsTable.reloadData()
+        updateTimeButton()
+    }
+    
+    // MARK: - Private methods
+    
+    private func updateMonthLabel(for date: Date) {
+        let monthString = calendarManager.getMonthDate(for: date)
+        monthLabel.text = monthString
+    }
+    
+    private func startTimerForUpdatingTime() {
+        timeUpdateTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateTimeButton), userInfo: nil, repeats: true)
+        updateTimeButton()
     }
 }
 
-// MARK: - UITableView settings
+// MARK: - UITableView delegate
 
 extension CustomContainerView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -66,6 +107,38 @@ extension CustomContainerView: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
+    }
+}
+
+// MARK: - FSCalendarDelegate
+
+extension CustomContainerView: FSCalendarDataSource, FSCalendarDelegate {
+    func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
+        updateMonthLabel(for: calendar.currentPage)
+    }
+    
+    func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let selectedDay = calendar.startOfDay(for: date)
+        let components = calendar.dateComponents([.day], from: today, to: selectedDay)
+                
+        guard let numberOfDays = components.day else { return }
+        if numberOfDays < 0 {
+            customPeriodEventsLabel.text = "Please select date up today :)"
+            self.events = []
+            presentEventsTable.reloadData()
+        } else {
+            let newLabel = calendarManager.getCurrentPeriodLabel(for: .day, value: numberOfDays)
+            customPeriodEventsLabel.text = newLabel
+            calendarManager.fetchEvents(for: .day, value: numberOfDays) { [weak self] in
+                DispatchQueue.main.async {
+                    self?.events = self?.calendarManager.getEvents() ?? []
+                        self?.presentEventsTable.reloadData()
+                }
+            }
+        }
     }
 }
 
@@ -93,7 +166,7 @@ extension CustomContainerView {
     }
     
     private func setupMonthLabel() {
-        monthLabel.text = calendarManager.getCurrentMonthLabel()
+        updateMonthLabel(for: calendar.currentPage)
         monthLabel.font = UIFont(name: "Poppins-Semibold", size: 20)
         monthLabel.textColor = .hex5856D6
         selectDataView.addSubview(monthLabel)
@@ -127,24 +200,24 @@ extension CustomContainerView {
             .width(constant: 24),
             .height(constant: 24)
         ])
+        
+        rightButton.addTarget(self, action: #selector(nextMonthButtonTapped), for: .touchUpInside)
+        leftButton.addTarget(self, action: #selector(previousMonthButtonTapped), for: .touchUpInside)
     }
     
     private func setupCalendar() {
         calendar.dataSource = self
         calendar.delegate = self
-        
+  //      calendar.scrollEnabled = false
         calendar.placeholderType = .none
-        calendar.appearance.selectionColor = UIColor.hex5856D6
-        
         calendar.headerHeight = 0
         
+        calendar.appearance.selectionColor = UIColor.hex5856D6
         calendar.appearance.weekdayFont = UIFont(name: "Poppins-Semibold", size: 16)
         calendar.appearance.weekdayTextColor = UIColor.hex3C3C434D
         calendar.appearance.caseOptions = [.weekdayUsesUpperCase]
-        
         calendar.appearance.titleFont = UIFont(name: "Poppins-Regular", size: 18)
         calendar.appearance.titleDefaultColor = .hex5856D6
-        
         self.addSubview(calendar)
     }
     
@@ -176,7 +249,7 @@ extension CustomContainerView {
     
     private func setupSelectTimeButton() {
         selectTimeButton.accessibilityIdentifier = "selectTimeButton"
-        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(object: timeModeSegmCntrl), for: .normal)
+        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(amPmSwitcher: timeModeSegmCntrl), for: .normal)
         selectTimeButton.titleLabel?.font = UIFont(name: "Poppins-Regular", size: 22)
         selectTimeButton.setTitleColor(.black, for: .normal)
         selectTimeButton.layer.cornerRadius = 6
@@ -187,7 +260,7 @@ extension CustomContainerView {
     
     private func setupCustomPeriodEventsLabel() {
         customPeriodEventsLabel.accessibilityIdentifier = "customPeriodEventsLabel"
-        customPeriodEventsLabel.text = calendarManager.getCustomPeriodLabel(for: .month, value: 2)
+        customPeriodEventsLabel.text = calendarManager.getCurrentPeriodLabel(for: .day, value: 1)
         customPeriodEventsLabel.textColor = .black
         customPeriodEventsLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         customPeriodEventsLabel.textAlignment = .left

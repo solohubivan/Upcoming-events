@@ -54,25 +54,25 @@ class MainViewController: UIViewController {
         
         switch mode {
         case .week:
-            calendarManager.fetchEvents(for: .weekOfMonth) { [weak self] in
+            calendarManager.fetchEvents(for: .weekOfMonth, value: 1) { [weak self] in
                 guard let self = self else { return }
                 self.weekContainerView.updateWeekEvents(self.calendarManager.getEvents())
                 self.weekContainerView.isHidden = false
             }
         case .month:
-            calendarManager.fetchEvents(for: .month) { [weak self] in
+            calendarManager.fetchEvents(for: .month, value: 1) { [weak self] in
                 guard let self = self else { return }
                 self.monthContainerView.updateMonthEvents(self.calendarManager.getEvents())
                 self.monthContainerView.isHidden = false
             }
         case .year:
-            calendarManager.fetchEvents(for: .year) { [weak self] in
+            calendarManager.fetchEvents(for: .year, value: 1) { [weak self] in
                 guard let self = self else { return }
                 self.yearContainerView.updateYearEvents(self.calendarManager.getEvents())
                 self.yearContainerView.isHidden = false
             }
         case .custom:
-            calendarManager.fetchCustomEvents(for: .month, value: 2) { [weak self] in
+            calendarManager.fetchEvents(for: .day, value: 1) { [weak self] in
                 guard let self = self else { return }
                 self.customContainerView.updateCustomEvents(self.calendarManager.getEvents())
                 self.customContainerView.isHidden = false

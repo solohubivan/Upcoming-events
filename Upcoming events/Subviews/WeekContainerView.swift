@@ -69,7 +69,7 @@ extension WeekContainerView {
     
     private func setupTitleLabel() {
         currentWeekLabel.accessibilityIdentifier = "currentWeekLabel"
-        currentWeekLabel.text = calendarManager.getCurrentPeriodLabel(for: .weekOfMonth)
+        currentWeekLabel.text = calendarManager.getCurrentPeriodLabel(for: .weekOfMonth, value: 1)
         currentWeekLabel.textColor = .black
         currentWeekLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentWeekLabel.textAlignment = .left

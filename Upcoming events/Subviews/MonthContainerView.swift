@@ -69,7 +69,7 @@ extension MonthContainerView {
     
     private func setupTitleLabel() {
         currentMonthLabel.accessibilityIdentifier = "currentMonthLabel"
-        currentMonthLabel.text = calendarManager.getCurrentPeriodLabel(for: .month)
+        currentMonthLabel.text = calendarManager.getCurrentPeriodLabel(for: .month, value: 1)
         currentMonthLabel.textColor = .black
         currentMonthLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentMonthLabel.textAlignment = .left

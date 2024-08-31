@@ -11,36 +11,15 @@ import UIKit
 
 class CalendarManager {
     
-    var events: [EventModel] = []
+    private var events: [EventModel] = []
     
-    let eventStore = EKEventStore()
+    private let eventStore = EKEventStore()
 
     func getEvents() -> [EventModel] {
         return events
     }
     
-    func getEventsCount() -> Int {
-        events.count
-    }
-    
-    func fetchEvents(for timeInterval: Calendar.Component, completion: @escaping () -> Void) {
-        let startDate = Date()
-        let endDate = Calendar.current.date(byAdding: timeInterval, value: 1, to: startDate)
-            
-        guard let endDate = endDate else { return }
-        let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: nil)
-        let ekEvents = eventStore.events(matching: predicate)
-                    
-        events.removeAll()
-                    
-        for ekEvent in ekEvents {
-            let event = EventModel(title: ekEvent.title ?? "No title", startDate: ekEvent.startDate, endDate: ekEvent.endDate)
-            events.append(event)
-        }
-        completion()
-    }
-    
-    func fetchCustomEvents(for timeInterval: Calendar.Component, value: Int, completion: @escaping () -> Void) {
+    func fetchEvents(for timeInterval: Calendar.Component, value: Int, completion: @escaping () -> Void) {
         let startDate = Date()
         let endDate = Calendar.current.date(byAdding: timeInterval, value: value, to: startDate)
             
@@ -57,41 +36,29 @@ class CalendarManager {
         completion()
     }
     
-    func getCurrentPeriodLabel(for timeInterval: Calendar.Component) -> String {
+    func getCurrentPeriodLabel(for timeInterval: Calendar.Component, value: Int) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d"
             
         let calendar = Calendar.current
         let today = Date()
-        
-        let endOfPeriod = calendar.date(byAdding: timeInterval, value: 1, to: today) ?? today
-        
-        let todayString = dateFormatter.string(from: today)
-        let endOfPeriodString = dateFormatter.string(from: endOfPeriod)
-        
-        let year = calendar.component(.year, from: today)
-        
-        return "\(todayString) - \(endOfPeriodString), \(year)"
-    }
-    
-    func getCustomPeriodLabel(for timeInterval: Calendar.Component, value: Int) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d"
+
+        guard let endOfPeriod = calendar.date(byAdding: timeInterval, value: value, to: today) else { return "" }
             
-        let calendar = Calendar.current
-        let today = Date()
-        
-        let endOfPeriod = calendar.date(byAdding: timeInterval, value: value, to: today) ?? today
-        
         let todayString = dateFormatter.string(from: today)
         let endOfPeriodString = dateFormatter.string(from: endOfPeriod)
-        
-        let year = calendar.component(.year, from: today)
-        
-        return "\(todayString) - \(endOfPeriodString), \(year)"
+            
+        let startYear = calendar.component(.year, from: today)
+        let endYear = calendar.component(.year, from: endOfPeriod)
+            
+        if startYear == endYear {
+            return "\(todayString) - \(endOfPeriodString), \(startYear)"
+        } else {
+            return "\(todayString), \(startYear) - \(endOfPeriodString), \(endYear)"
+        }
     }
     
-    func createClockTimeLabel(object: UISegmentedControl) -> String {
+    func createClockTimeLabel(amPmSwitcher: UISegmentedControl) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "hh : mm"
@@ -106,19 +73,24 @@ class CalendarManager {
         let timeMode: TimeMode = amPmString == "AM" ? .am : .pm
         switch timeMode {
         case .am:
-            object.selectedSegmentIndex = 0
+            amPmSwitcher.selectedSegmentIndex = 0
         case .pm:
-            object.selectedSegmentIndex = 1
+            amPmSwitcher.selectedSegmentIndex = 1
         }
         
         return currentTime
     }
     
-    func getCurrentMonthLabel() -> String {
+    func getMonthDate(for date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM"
-        let currentMonth = formatter.string(from: Date())
-        return currentMonth
+        return formatter.string(from: date)
+    }
+    
+    func getFullDate(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMMM yyyy"
+        return formatter.string(from: date)
     }
     
     func formatTimeForLabel(_ interval: TimeInterval) -> String {

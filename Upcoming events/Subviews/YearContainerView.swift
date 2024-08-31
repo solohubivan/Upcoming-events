@@ -68,7 +68,7 @@ extension YearContainerView {
     
     private func setupTitleLabel() {
         currentYearLabel.accessibilityIdentifier = "currentYearLabel"
-        currentYearLabel.text = calendarManager.getCurrentPeriodLabel(for: .year)
+        currentYearLabel.text = calendarManager.getCurrentPeriodLabel(for: .year, value: 1)
         currentYearLabel.textColor = .black
         currentYearLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentYearLabel.textAlignment = .left
