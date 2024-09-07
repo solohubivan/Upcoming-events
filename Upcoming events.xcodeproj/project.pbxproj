@@ -30,6 +30,7 @@
 		227D01A42C68F12700ADF63F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 227D01A32C68F12700ADF63F /* Assets.xcassets */; };
 		227D01A72C68F12700ADF63F /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 227D01A62C68F12700ADF63F /* Base */; };
 		22991B102C80588800078FCE /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 22991B0F2C80588800078FCE /* FSCalendar */; };
+		22B372A02C8396B5005BA993 /* UIView+TouchThroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B3729F2C8396B5005BA993 /* UIView+TouchThroughView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		227D01A82C68F12700ADF63F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		227D01AD2C68F12800ADF63F /* Upcoming eventsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Upcoming eventsTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		227D01B72C68F12800ADF63F /* Upcoming eventsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Upcoming eventsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		22B3729F2C8396B5005BA993 /* UIView+TouchThroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+TouchThroughView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */,
 				22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */,
 				22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */,
+				22B3729F2C8396B5005BA993 /* UIView+TouchThroughView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 				22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */,
 				22541E882C7DEBE400EA124F /* EventModel.swift in Sources */,
 				22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */,
+				22B372A02C8396B5005BA993 /* UIView+TouchThroughView.swift in Sources */,
 				22048B452C69249D00361F23 /* AppConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

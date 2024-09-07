@@ -58,17 +58,15 @@ class CalendarManager {
         }
     }
     
-    func createClockTimeLabel(amPmSwitcher: UISegmentedControl) -> String {
+    func createClockTimeLabel(for date: Date, amPmSwitcher: UISegmentedControl) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "hh : mm"
-            
-        let currentTime = formatter.string(from: Date())
-            
+        let timeString = formatter.string(from: date)
         let hourFormatter = DateFormatter()
         hourFormatter.locale = Locale(identifier: "en_US_POSIX")
         hourFormatter.dateFormat = "a"
-        let amPmString = hourFormatter.string(from: Date())
+        let amPmString = hourFormatter.string(from: date)
 
         let timeMode: TimeMode = amPmString == "AM" ? .am : .pm
         switch timeMode {
@@ -78,7 +76,7 @@ class CalendarManager {
             amPmSwitcher.selectedSegmentIndex = 1
         }
         
-        return currentTime
+        return timeString
     }
     
     func getMonthDate(for date: Date) -> String {
@@ -108,5 +106,31 @@ class CalendarManager {
         default:
             return "less than a min"
         }
+    }
+    
+    func filterEventsBySelectedTime(_ selectedTime: Date, forDate selectedDate: Date) -> [EventModel] {
+        let calendar = Calendar.current
+        let timeZone = TimeZone.current
+
+        let selectedDateComponents = calendar.dateComponents([.year, .month, .day], from: selectedDate)
+        let selectedTimeComponents = calendar.dateComponents([.hour, .minute], from: selectedTime)
+
+        var combinedComponents = DateComponents()
+        combinedComponents.year = selectedDateComponents.year
+        combinedComponents.month = selectedDateComponents.month
+        combinedComponents.day = selectedDateComponents.day
+        combinedComponents.hour = selectedTimeComponents.hour
+        combinedComponents.minute = selectedTimeComponents.minute
+
+        guard let combinedDateTime = calendar.date(from: combinedComponents) else { return [] }
+        let localSelectedTime = combinedDateTime.addingTimeInterval(TimeInterval(timeZone.secondsFromGMT(for: combinedDateTime)))
+
+        let filteredEvents = events.filter { event in
+            let localStartTime = event.startDate.addingTimeInterval(TimeInterval(timeZone.secondsFromGMT(for: event.startDate)))
+            let localEndTime = event.endDate.addingTimeInterval(TimeInterval(timeZone.secondsFromGMT(for: event.endDate)))
+
+            return localSelectedTime >= localStartTime && localSelectedTime <= localEndTime
+        }
+        return filteredEvents
     }
 }

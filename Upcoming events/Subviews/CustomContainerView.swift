@@ -16,7 +16,9 @@ enum TimeMode {
 
 class CustomContainerView: UIView {
     
-    private var selectDataView = UIView()
+    private var scrollView = UIScrollView()
+    private var contentView = UIView()
+    private var selectDataView = TouchPassthroughView()
     private var monthLabel = UILabel()
     private var calendar = FSCalendar()
     private var timeTitleLabel = UILabel()
@@ -24,33 +26,27 @@ class CustomContainerView: UIView {
     private var timeModeSegmCntrl = UISegmentedControl()
     private var customPeriodEventsLabel = UILabel()
     private var presentEventsTable = UITableView()
+    private var timePicker = UIDatePicker()
+    private var toolBar = UIToolbar()
     
     private var calendarManager = CalendarManager()
     private let eventStore = EKEventStore()
     private var events: [EventModel] = []
-    
-    private var timeUpdateTimer: Timer?
     private var currentMonth: Date
     
     override init(frame: CGRect) {
         currentMonth = Date()
         super.init(frame: frame)
         setupUI()
-        startTimerForUpdatingTime()
     }
     
     required init?(coder: NSCoder) {
         currentMonth = Date()
         super.init(coder: coder)
         setupUI()
-        startTimerForUpdatingTime()
-    }
-    
-    deinit {
-        timeUpdateTimer?.invalidate()
     }
 
-    // MARK: - Buttons actions
+    // MARK: - objc methods
     
     @objc private func nextMonthButtonTapped() {
         guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: calendar.currentPage) else { return }
@@ -65,7 +61,53 @@ class CustomContainerView: UIView {
     }
     
     @objc private func updateTimeButton() {
-        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(amPmSwitcher: timeModeSegmCntrl), for: .normal)
+        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(for: Date(), amPmSwitcher: timeModeSegmCntrl), for: .normal)
+    }
+    
+    @objc private func donePressed() {
+        let selectedTime = timePicker.date
+        let timeString = calendarManager.createClockTimeLabel(for: selectedTime, amPmSwitcher: timeModeSegmCntrl)
+        selectTimeButton.setTitle(timeString, for: .normal)
+        
+        guard let selectedDate = self.calendar.selectedDate else { return }
+        let filteredEvents = calendarManager.filterEventsBySelectedTime(selectedTime, forDate: selectedDate)
+
+        self.events = filteredEvents
+        presentEventsTable.reloadData()
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+           let window = windowScene.windows.first {
+            if let overlayView = window.viewWithTag(1001) {
+                    overlayView.removeFromSuperview()
+            }
+        }
+    }
+    
+    @objc private func openTimePicker() {
+        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+           let window = windowScene.windows.first {
+            let overlayView = UIView(frame: window.bounds)
+            overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            overlayView.tag = 1001
+
+            overlayView.addSubview(timePicker)
+            overlayView.addSubview(toolBar)
+            
+            toolBar.addConstraints(to_view: overlayView, [
+                .leading(anchor: overlayView.leadingAnchor, constant: 0),
+                .trailing(anchor: overlayView.trailingAnchor, constant: 0),
+                .bottom(anchor: timePicker.topAnchor, constant: 0),
+                .height(constant: 35)
+            ])
+            timePicker.addConstraints(to_view: overlayView, [
+                .leading(anchor: overlayView.leadingAnchor, constant: 0),
+                .trailing(anchor: overlayView.trailingAnchor, constant: 0),
+                .bottom(anchor: overlayView.bottomAnchor, constant: 0),
+                .height(constant: 210)
+            ])
+            
+            window.addSubview(overlayView)
+        }
     }
     
     // MARK: - Public methods
@@ -73,7 +115,6 @@ class CustomContainerView: UIView {
     func updateCustomEvents(_ newEvents: [EventModel]) {
         self.events = newEvents
         presentEventsTable.reloadData()
-        updateTimeButton()
     }
     
     // MARK: - Private methods
@@ -81,11 +122,6 @@ class CustomContainerView: UIView {
     private func updateMonthLabel(for date: Date) {
         let monthString = calendarManager.getMonthDate(for: date)
         monthLabel.text = monthString
-    }
-    
-    private func startTimerForUpdatingTime() {
-        timeUpdateTimer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(updateTimeButton), userInfo: nil, repeats: true)
-        updateTimeButton()
     }
 }
 
@@ -135,7 +171,8 @@ extension CustomContainerView: FSCalendarDataSource, FSCalendarDelegate {
             calendarManager.fetchEvents(for: .day, value: numberOfDays) { [weak self] in
                 DispatchQueue.main.async {
                     self?.events = self?.calendarManager.getEvents() ?? []
-                        self?.presentEventsTable.reloadData()
+                    self?.presentEventsTable.reloadData()
+                    self?.updateTimeButton()
                 }
             }
         }
@@ -147,7 +184,9 @@ extension CustomContainerView: FSCalendarDataSource, FSCalendarDelegate {
 extension CustomContainerView {
     private func setupUI() {
         self.backgroundColor = .white
-        setupSelectDataView()
+        setupScrollView()
+        setupContentView()
+        setupSelectDateView()
         setupMonthLabel()
         setupLeftRightButtons()
         setupCalendar()
@@ -156,10 +195,35 @@ extension CustomContainerView {
         setupSelectTimeButton()
         setupCustomPeriodEventsLabel()
         setupTable()
+        setupTimePicker()
         setupConstraints()
     }
     
-    private func setupSelectDataView() {
+    private func setupTimePicker() {
+        timePicker.datePickerMode = .time
+        timePicker.preferredDatePickerStyle = .wheels
+        timePicker.locale = Locale(identifier: "en_US_POSIX")
+        timePicker.calendar = Calendar.current
+        timePicker.backgroundColor = .white
+        
+        let spacer = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        spacer.width = 16
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePressed))
+        toolBar.setItems([spacer, doneButton], animated: true)
+        toolBar.sizeToFit()
+    }
+    
+    private func setupScrollView() {
+        scrollView.backgroundColor = .clear
+        self.addSubview(scrollView)
+    }
+    
+    private func setupContentView() {
+        contentView.backgroundColor = .white
+        scrollView.addSubview(contentView)
+    }
+    
+    private func setupSelectDateView() {
         selectDataView.backgroundColor = .white
         selectDataView.applyShadow()
         self.addSubview(selectDataView)
@@ -208,7 +272,7 @@ extension CustomContainerView {
     private func setupCalendar() {
         calendar.dataSource = self
         calendar.delegate = self
-  //      calendar.scrollEnabled = false
+        calendar.scrollEnabled = true
         calendar.placeholderType = .none
         calendar.headerHeight = 0
         
@@ -249,12 +313,13 @@ extension CustomContainerView {
     
     private func setupSelectTimeButton() {
         selectTimeButton.accessibilityIdentifier = "selectTimeButton"
-        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(amPmSwitcher: timeModeSegmCntrl), for: .normal)
+        selectTimeButton.setTitle(calendarManager.createClockTimeLabel(for: Date(), amPmSwitcher: timeModeSegmCntrl), for: .normal)
         selectTimeButton.titleLabel?.font = UIFont(name: "Poppins-Regular", size: 22)
         selectTimeButton.setTitleColor(.black, for: .normal)
         selectTimeButton.layer.cornerRadius = 6
         selectTimeButton.layer.backgroundColor = UIColor.hex767680.cgColor
         
+        selectTimeButton.addTarget(self, action: #selector(openTimePicker), for: .touchUpInside)
         selectDataView.addSubview(selectTimeButton)
     }
     
@@ -277,10 +342,24 @@ extension CustomContainerView {
     }
     
     private func setupConstraints() {
-        selectDataView.addConstraints(to_view: self, [
-            .top(anchor: self.topAnchor, constant: 0),
-            .leading(anchor: self.leadingAnchor, constant: 16),
-            .trailing(anchor: self.trailingAnchor, constant: 16),
+        scrollView.addConstraints(to_view: self)
+        
+        contentView.addConstraints(to_view: scrollView, [
+            .top(anchor: scrollView.topAnchor, constant: 0),
+            .leading(anchor: scrollView.leadingAnchor, constant: 0),
+            .trailing(anchor: scrollView.trailingAnchor, constant: 0),
+            .bottom(anchor: scrollView.bottomAnchor, constant: 0),
+            .height(constant: 900)
+        ])
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+        
+        selectDataView.addConstraints(to_view: contentView, [
+            .top(anchor: contentView.topAnchor, constant: 0),
+            .leading(anchor: contentView.leadingAnchor, constant: 16),
+            .trailing(anchor: contentView.trailingAnchor, constant: 16),
             .bottom(anchor: timeModeSegmCntrl.bottomAnchor, constant: -16)
         ])
         
@@ -319,14 +398,14 @@ extension CustomContainerView {
             .height(constant: 37)
         ])
         
-        customPeriodEventsLabel.addConstraints(to_view: self, [
+        customPeriodEventsLabel.addConstraints(to_view: contentView, [
             .top(anchor: selectDataView.bottomAnchor, constant: 16),
-            .leading(anchor: self.leadingAnchor, constant: 16),
-            .trailing(anchor: self.trailingAnchor, constant: 16),
+            .leading(anchor: contentView.leadingAnchor, constant: 16),
+            .trailing(anchor: contentView.trailingAnchor, constant: 16),
             .height(constant: 30)
         ])
         
-        presentEventsTable.addConstraints(to_view: self, [
+        presentEventsTable.addConstraints(to_view: contentView, [
             .top(anchor: customPeriodEventsLabel.bottomAnchor, constant: 5)
         ])
     }
