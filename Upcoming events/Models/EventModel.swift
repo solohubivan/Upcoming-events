@@ -7,7 +7,7 @@
 
 import EventKit
 
-struct EventModel {
+struct EventModel: Codable {
     let title: String
     let startDate: Date
     let endDate: Date

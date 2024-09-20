@@ -13,9 +13,7 @@ class MonthContainerView: UIView {
     private var currentMonthLabel = UILabel()
     private var presentEventsTable = UITableView()
     
-    private let eventStore = EKEventStore()
-    
-    private var calendarManager = CalendarManager()
+    private var eventsManager = EventsManager()
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -30,7 +28,15 @@ class MonthContainerView: UIView {
     
     // MARK: - Public methods
     
-    func updateMonthEvents(_ newEvents: [EventModel]) {
+    func configureMonthEvents(with manager: EventsManager) {
+        self.eventsManager = manager
+        currentMonthLabel.text = manager.getCurrentPeriodLabel(for: .month, value: 1)
+        updateMonthEvents(manager.getEvents())
+    }
+    
+    // MARK: - Private methods
+    
+    private func updateMonthEvents(_ newEvents: [EventModel]) {
         self.events = newEvents
         presentEventsTable.reloadData()
     }
@@ -68,8 +74,7 @@ extension MonthContainerView {
     }
     
     private func setupTitleLabel() {
-        currentMonthLabel.accessibilityIdentifier = "currentMonthLabel"
-        currentMonthLabel.text = calendarManager.getCurrentPeriodLabel(for: .month, value: 1)
+        currentMonthLabel.text = ""
         currentMonthLabel.textColor = .black
         currentMonthLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentMonthLabel.textAlignment = .left

@@ -13,7 +13,7 @@ class CustomTableViewCell: UITableViewCell {
     private var eventNameLabel = UILabel()
     private var remainingTimeLabel = UILabel()
     
-    private var calendarManager = CalendarManager()
+    private var eventManager = EventsManager()
     private var timer: Timer?
     private var event: EventModel?
     
@@ -46,7 +46,7 @@ class CustomTableViewCell: UITableViewCell {
     @objc private func updateRemainingTime() {
         guard let event = event else { return }
         let remainingTime = event.startDate.timeIntervalSince(Date())
-        remainingTimeLabel.text = calendarManager.formatTimeForLabel(remainingTime)
+        remainingTimeLabel.text = eventManager.formatTimeForLabel(remainingTime)
     }
     
     // MARK: - Public methods

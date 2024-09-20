@@ -23,7 +23,7 @@ class MainViewController: UIViewController {
     private var infoModesButtons: [UIButton] = []
     private var selectedInfoMode: CalendarInfoMode = .week
     private let eventStore = EKEventStore()
-    private var calendarManager = CalendarManager()
+    private var eventsManager = EventsManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +31,13 @@ class MainViewController: UIViewController {
     }
     
     // MARK: - @objc methods
+    
+    @objc private func addButtonTapped () {
+        let vc = AddNewEventVC()
+        vc.modalPresentationStyle = .formSheet
+        vc.eventsManager = self.eventsManager
+        present(vc, animated: true)
+    }
     
     @objc private func toggleButtonSelection(_ sender: UIButton) {
         guard let index = infoModesButtons.firstIndex(of: sender), let mode = CalendarInfoMode(rawValue: index) else { return }
@@ -54,27 +61,27 @@ class MainViewController: UIViewController {
         
         switch mode {
         case .week:
-            calendarManager.fetchEvents(for: .weekOfMonth, value: 1) { [weak self] in
+            eventsManager.fetchEvents(for: .weekOfMonth, value: 1) { [weak self] in
                 guard let self = self else { return }
-                self.weekContainerView.updateWeekEvents(self.calendarManager.getEvents())
+                self.weekContainerView.configureWeekEvents(with: self.eventsManager)
                 self.weekContainerView.isHidden = false
             }
         case .month:
-            calendarManager.fetchEvents(for: .month, value: 1) { [weak self] in
+            eventsManager.fetchEvents(for: .month, value: 1) { [weak self] in
                 guard let self = self else { return }
-                self.monthContainerView.updateMonthEvents(self.calendarManager.getEvents())
+                self.monthContainerView.configureMonthEvents(with: self.eventsManager)
                 self.monthContainerView.isHidden = false
             }
         case .year:
-            calendarManager.fetchEvents(for: .year, value: 1) { [weak self] in
+            eventsManager.fetchEvents(for: .year, value: 1) { [weak self] in
                 guard let self = self else { return }
-                self.yearContainerView.updateYearEvents(self.calendarManager.getEvents())
+                self.yearContainerView.configureYearEvents(with: self.eventsManager)
                 self.yearContainerView.isHidden = false
             }
         case .custom:
-            calendarManager.fetchEvents(for: .day, value: 1) { [weak self] in
+            eventsManager.fetchEvents(for: .day, value: 1) { [weak self] in
                 guard let self = self else { return }
-                self.customContainerView.updateCustomEvents(self.calendarManager.getEvents())
+ //               self.customContainerView.updateCustomEvents(self.eventsManager.getEvents())
                 self.customContainerView.isHidden = false
             }
         }
@@ -157,12 +164,8 @@ extension MainViewController {
         addButton.tintColor = UIColor.hex5856D6
         
         view.addSubview(addButton)
-//       addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+        addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
-    
-//    @objc private func addButtonTapped () {
-//        let vc = EKEventViewController()
-//    }
     
     private func setupInfoModeButtonsStackView() {
         infoModeButtonsStackView.axis = .horizontal

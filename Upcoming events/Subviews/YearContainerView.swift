@@ -13,8 +13,7 @@ class YearContainerView: UIView {
     private var currentYearLabel = UILabel()
     private var presentEventsTable = UITableView()
     
-    private let eventStore = EKEventStore()
-    private var calendarManager = CalendarManager()
+    private var eventsManager = EventsManager()
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -32,6 +31,12 @@ class YearContainerView: UIView {
     func updateYearEvents(_ newEvents: [EventModel]) {
         self.events = newEvents
         presentEventsTable.reloadData()
+    }
+    
+    func configureYearEvents(with manager: EventsManager) {
+        self.eventsManager = manager
+        currentYearLabel.text = manager.getCurrentPeriodLabel(for: .year, value: 1)
+        updateYearEvents(manager.getEvents())
     }
 }
 
@@ -68,7 +73,7 @@ extension YearContainerView {
     
     private func setupTitleLabel() {
         currentYearLabel.accessibilityIdentifier = "currentYearLabel"
-        currentYearLabel.text = calendarManager.getCurrentPeriodLabel(for: .year, value: 1)
+        currentYearLabel.text = ""
         currentYearLabel.textColor = .black
         currentYearLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentYearLabel.textAlignment = .left

@@ -13,9 +13,7 @@ class WeekContainerView: UIView {
     private var currentWeekLabel = UILabel()
     private var presentEventsTable = UITableView()
     
-    private let eventStore = EKEventStore()
-    
-    private var calendarManager = CalendarManager()
+    private var eventsManager = EventsManager()
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -28,11 +26,19 @@ class WeekContainerView: UIView {
         setupUI()
     }
     
-    // MARK: - Public methods
+    // MARK: - Private methods
     
-    func updateWeekEvents(_ newEvents: [EventModel]) {
+    private func updateWeekEvents(_ newEvents: [EventModel]) {
         self.events = newEvents
         presentEventsTable.reloadData()
+    }
+    
+    // MARK: - Public methods
+    
+    func configureWeekEvents(with manager: EventsManager) {
+        self.eventsManager = manager
+        currentWeekLabel.text = manager.getCurrentPeriodLabel(for: .weekOfMonth, value: 1)
+        updateWeekEvents(manager.getEvents())
     }
 }
 
@@ -68,8 +74,8 @@ extension WeekContainerView {
     }
     
     private func setupTitleLabel() {
-        currentWeekLabel.accessibilityIdentifier = "currentWeekLabel"
-        currentWeekLabel.text = calendarManager.getCurrentPeriodLabel(for: .weekOfMonth, value: 1)
+        currentWeekLabel.text = eventsManager.getCurrentPeriodLabel(for: .weekOfMonth, value: 1)
+        currentWeekLabel.text = ""
         currentWeekLabel.textColor = .black
         currentWeekLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
         currentWeekLabel.textAlignment = .left
