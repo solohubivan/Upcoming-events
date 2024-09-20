@@ -13,7 +13,8 @@ class MonthContainerView: UIView {
     private var currentMonthLabel = UILabel()
     private var presentEventsTable = UITableView()
     
-    private var eventsManager = EventsManager()
+    private var refreshControl = UIRefreshControl()
+    private var eventsManager: EventsManager?
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -24,6 +25,13 @@ class MonthContainerView: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
+    }
+    
+    // MARK: - @objc methods
+    
+    @objc private func refreshData() {
+        updateMonthEvents(eventsManager?.getEvents() ?? [])
+        refreshControl.endRefreshing()
     }
     
     // MARK: - Public methods
@@ -58,6 +66,18 @@ extension MonthContainerView: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = events[indexPath.row]
+
+        if let viewController = self.findViewController() {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                eventsManager?.showEventDetailsAlert(for: event, in: viewController, sourceView: cell)
+            }
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
@@ -87,6 +107,8 @@ extension MonthContainerView {
         presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: "CustomCell")
         presentEventsTable.separatorStyle = .none
         presentEventsTable.backgroundColor = .white
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        presentEventsTable.refreshControl = refreshControl
         self.addSubview(presentEventsTable)
     }
     

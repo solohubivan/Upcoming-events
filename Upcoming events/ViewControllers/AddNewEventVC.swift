@@ -18,9 +18,7 @@ class AddNewEventVC: UIViewController {
     private var addEventButton = UIButton()
     
     private var addedEvents: [EventModel] = []
-    
-//    private var eventManager = EventsManager()
-    var eventsManager: EventsManager?
+    private var eventsManager: EventsManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,11 +26,17 @@ class AddNewEventVC: UIViewController {
         setInitialDatePickers()
     }
     
+    // MARK: - Public methods
+    
+    func setEventsManager(_ manager: EventsManager) {
+        self.eventsManager = manager
+    }
+    
     // MARK: - Buttons actions
     
     @objc private func addNewEvent() {
         guard let eventTitle = eventTitleTextField.text, !eventTitle.isEmpty else {
-//            showAlertForEmptyTitle()
+            showAlertForEmptyTitle()
             return
         }
         
@@ -52,9 +56,8 @@ class AddNewEventVC: UIViewController {
         dismissKeyboard()
         eventTitleTextField.text = ""
         setInitialDatePickers()
-        
 //        dismiss(animated: true, completion: nil)
-        print(eventsManager?.getEvents() ?? "щось не ок")
+        showAlertForAdded(newEvent: newEvent)
     }
     
     // MARK: - Private methods
@@ -64,6 +67,32 @@ class AddNewEventVC: UIViewController {
         startDatePicker.date = now
         let fifteenMinutesLater = Calendar.current.date(byAdding: .minute, value: 15, to: now)
         endDatePicker.date = fifteenMinutesLater ?? now
+    }
+    
+    private func showAlertForEmptyTitle() {
+        let alert = UIAlertController(title: "Enter event title pls", message: nil, preferredStyle: .alert)
+        present(alert, animated: true)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            alert.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    private func showAlertForAdded(newEvent: EventModel) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+            
+        let startDateStr = dateFormatter.string(from: newEvent.startDate)
+        let endDateStr = dateFormatter.string(from: newEvent.endDate)
+
+        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
+            
+        let alert = UIAlertController(title: "Event \"\(newEvent.title)\" added", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+            
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -172,6 +201,8 @@ extension AddNewEventVC {
         addEventButton.addTarget(self, action: #selector(addNewEvent), for: .touchUpInside)
         view.addSubview(addEventButton)
     }
+    
+    // MARK: - Setup Constraints
     
     private func setupConstraints() {
         titleLabel.addConstraints(to_view: view, [

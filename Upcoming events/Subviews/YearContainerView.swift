@@ -13,7 +13,8 @@ class YearContainerView: UIView {
     private var currentYearLabel = UILabel()
     private var presentEventsTable = UITableView()
     
-    private var eventsManager = EventsManager()
+    private var refreshControl = UIRefreshControl()
+    private var eventsManager: EventsManager?
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -26,17 +27,26 @@ class YearContainerView: UIView {
         setupUI()
     }
     
-    // MARK: - Public methods
+    // MARK: - @objc methods
     
-    func updateYearEvents(_ newEvents: [EventModel]) {
-        self.events = newEvents
-        presentEventsTable.reloadData()
+    @objc private func refreshData() {
+        updateYearEvents(eventsManager?.getEvents() ?? [])
+        refreshControl.endRefreshing()
     }
+    
+    // MARK: - Public methods
     
     func configureYearEvents(with manager: EventsManager) {
         self.eventsManager = manager
         currentYearLabel.text = manager.getCurrentPeriodLabel(for: .year, value: 1)
         updateYearEvents(manager.getEvents())
+    }
+    
+    // MARK: - Private methods
+    
+    private func updateYearEvents(_ newEvents: [EventModel]) {
+        self.events = newEvents
+        presentEventsTable.reloadData()
     }
 }
 
@@ -56,6 +66,18 @@ extension YearContainerView: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = events[indexPath.row]
+
+        if let viewController = self.findViewController() {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                eventsManager?.showEventDetailsAlert(for: event, in: viewController, sourceView: cell)
+            }
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
@@ -72,7 +94,6 @@ extension YearContainerView {
     }
     
     private func setupTitleLabel() {
-        currentYearLabel.accessibilityIdentifier = "currentYearLabel"
         currentYearLabel.text = ""
         currentYearLabel.textColor = .black
         currentYearLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
@@ -86,6 +107,8 @@ extension YearContainerView {
         presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: "CustomCell")
         presentEventsTable.separatorStyle = .none
         presentEventsTable.backgroundColor = .white
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        presentEventsTable.refreshControl = refreshControl
         self.addSubview(presentEventsTable)
     }
     

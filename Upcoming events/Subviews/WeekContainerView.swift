@@ -13,7 +13,8 @@ class WeekContainerView: UIView {
     private var currentWeekLabel = UILabel()
     private var presentEventsTable = UITableView()
     
-    private var eventsManager = EventsManager()
+    private var refreshControl = UIRefreshControl()
+    private var eventsManager: EventsManager?
     private var events: [EventModel] = []
     
     override init(frame: CGRect) {
@@ -24,6 +25,13 @@ class WeekContainerView: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupUI()
+    }
+    
+    // MARK: - @objc methods
+    
+    @objc private func refreshData() {
+        updateWeekEvents(eventsManager?.getEvents() ?? [])
+        refreshControl.endRefreshing()
     }
     
     // MARK: - Private methods
@@ -58,6 +66,18 @@ extension WeekContainerView: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = events[indexPath.row]
+
+        if let viewController = self.findViewController() {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                eventsManager?.showEventDetailsAlert(for: event, in: viewController, sourceView: cell)
+            }
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
@@ -74,7 +94,6 @@ extension WeekContainerView {
     }
     
     private func setupTitleLabel() {
-        currentWeekLabel.text = eventsManager.getCurrentPeriodLabel(for: .weekOfMonth, value: 1)
         currentWeekLabel.text = ""
         currentWeekLabel.textColor = .black
         currentWeekLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
@@ -88,6 +107,8 @@ extension WeekContainerView {
         presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: "CustomCell")
         presentEventsTable.separatorStyle = .none
         presentEventsTable.backgroundColor = .white
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        presentEventsTable.refreshControl = refreshControl
         self.addSubview(presentEventsTable)
     }
     

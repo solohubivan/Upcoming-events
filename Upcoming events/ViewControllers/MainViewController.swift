@@ -35,8 +35,39 @@ class MainViewController: UIViewController {
     @objc private func addButtonTapped () {
         let vc = AddNewEventVC()
         vc.modalPresentationStyle = .formSheet
-        vc.eventsManager = self.eventsManager
+        vc.setEventsManager(self.eventsManager)
         present(vc, animated: true)
+    }
+    
+    @objc private func showMenu(_ sender: UIButton) {
+        let menuItems: [UIAction] = [
+            UIAction(title: "Shared events", image: UIImage(systemName: "tray.and.arrow.up.fill"), handler: { [weak self] _ in
+                self?.dismissKeyboard()
+                
+                let sharingEventsVC = SharingEventsVC()
+                sharingEventsVC.modalPresentationStyle = .formSheet
+                sharingEventsVC.selectedSharingModeSgmntdCntrIndex = 0
+                self?.present(sharingEventsVC, animated: true, completion: nil)
+            }),
+            
+            UIAction(title: "Received events", image: UIImage(systemName: "tray.and.arrow.down.fill"), handler: { [weak self] _ in
+                self?.dismissKeyboard()
+                
+                let sharingEventsVC = SharingEventsVC()
+                sharingEventsVC.modalPresentationStyle = .formSheet
+                sharingEventsVC.selectedSharingModeSgmntdCntrIndex = 1
+                self?.present(sharingEventsVC, animated: true, completion: nil)
+            }),
+            UIAction(title: "Get event with QR", image: UIImage(systemName: "qrcode"), handler: { [weak self] _ in
+                self?.dismissKeyboard()
+                
+                print("3d button tapped")
+            })
+        ]
+            
+        let menu = UIMenu(children: menuItems)
+        sender.menu = menu
+        sender.showsMenuAsPrimaryAction = true
     }
     
     @objc private func toggleButtonSelection(_ sender: UIButton) {
@@ -142,7 +173,7 @@ extension MainViewController {
         menuButton.setImage(buttonImage, for: .normal)
         menuButton.imageView?.contentMode = .scaleAspectFit
         menuButton.tintColor = UIColor.hex5856D6
-        
+        menuButton.addTarget(self, action: #selector(showMenu(_:)), for: .touchUpInside)
         view.addSubview(menuButton)
     }
     
