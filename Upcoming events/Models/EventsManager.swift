@@ -11,6 +11,7 @@ import UIKit
 
 class EventsManager {
     
+    private var receivedEvents: [EventModel] = []
     private var sharedEvents: [EventModel] = []
     private var addedEvents: [EventModel] = []
     private var events: [EventModel] = []
@@ -18,6 +19,32 @@ class EventsManager {
     private let eventStore = EKEventStore()
     
     // MARK: - Private methods
+    
+    private func saveReceivedEvents() {
+        if let data = try? JSONEncoder().encode(receivedEvents) {
+            UserDefaults.standard.set(data, forKey: "receivedEvents")
+        }
+    }
+    
+    private func loadReceivedEvents() {
+        if let data = UserDefaults.standard.data(forKey: "receivedEvents"),
+           let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
+            receivedEvents = savedEvents
+        }
+    }
+    
+    private func saveSharedEvents() {
+        if let data = try? JSONEncoder().encode(sharedEvents) {
+            UserDefaults.standard.set(data, forKey: "sharedEvents")
+        }
+    }
+
+    private func loadSharedEvents() {
+        if let data = UserDefaults.standard.data(forKey: "sharedEvents"),
+            let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
+            sharedEvents = savedEvents
+        }
+    }
     
     private func saveAddedEvents() {
         if let data = try? JSONEncoder().encode(addedEvents) {
@@ -48,9 +75,34 @@ class EventsManager {
         return addedEvents + events
     }
     
+    func getRecievedEvents() -> [EventModel] {
+        loadReceivedEvents()
+        return receivedEvents
+    }
+    
+    func removeSharedEvents(at index: Int) {
+        receivedEvents.remove(at: index)
+        saveReceivedEvents()
+    }
+    
+    func getSharedEvents() -> [EventModel] {
+        loadSharedEvents()
+        return sharedEvents
+    }
+    
+    func removeSharedEvent(at index: Int) {
+        sharedEvents.remove(at: index)
+        saveSharedEvents()
+    }
+    
     func addEvent(_ event: EventModel) {
         addedEvents.append(event)
         saveAddedEvents()
+    }
+    
+    func addSharedEvent(_ event: EventModel) {
+        sharedEvents.append(event)
+        saveSharedEvents()
     }
     
     func fetchEvents(for timeInterval: Calendar.Component, value: Int, completion: @escaping () -> Void) {
@@ -124,6 +176,7 @@ class EventsManager {
             
         let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
         let shareAction = UIAlertAction(title: "Share", style: .default) { _ in
+            self.addSharedEvent(event)
             let shareUtility = ShareUtility()
             let eventInfo = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
             let shareViewController = shareUtility.createShareViewController(contentToShare: eventInfo, sourceView: sourceView)

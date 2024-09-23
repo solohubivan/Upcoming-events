@@ -45,6 +45,7 @@ class MainViewController: UIViewController {
                 self?.dismissKeyboard()
                 
                 let sharingEventsVC = SharingEventsVC()
+                sharingEventsVC.eventsManager = self?.eventsManager
                 sharingEventsVC.modalPresentationStyle = .formSheet
                 sharingEventsVC.selectedSharingModeSgmntdCntrIndex = 0
                 self?.present(sharingEventsVC, animated: true, completion: nil)
@@ -54,6 +55,7 @@ class MainViewController: UIViewController {
                 self?.dismissKeyboard()
                 
                 let sharingEventsVC = SharingEventsVC()
+                sharingEventsVC.eventsManager = self?.eventsManager
                 sharingEventsVC.modalPresentationStyle = .formSheet
                 sharingEventsVC.selectedSharingModeSgmntdCntrIndex = 1
                 self?.present(sharingEventsVC, animated: true, completion: nil)

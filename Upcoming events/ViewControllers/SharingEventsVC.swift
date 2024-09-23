@@ -13,36 +13,54 @@ class SharingEventsVC: UIViewController {
     private var sharingModeSgmntdCntrl = UISegmentedControl()
     private var presentEventsTable = UITableView()
     
+    private var sharingEvents: [EventModel] = []
+    var eventsManager: EventsManager?
+    
     var selectedSharingModeSgmntdCntrIndex: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         updateSharingModeSegmntCntr()
+        updateUI(for: selectedSharingModeSgmntdCntrIndex)
     }
     
     // MARK: - Objc methods
     
     @objc private func segmentedControlChanged(_ sender: UISegmentedControl) {
-        updateTitleLabel(for: sender.selectedSegmentIndex)
+        updateUI(for: sender.selectedSegmentIndex)
     }
     
     // MARK: - Private methods
     
-    private func updateTitleLabel(for index: Int) {
+    private func updateUI(for index: Int) {
         switch index {
         case 0:
             titleLabel.text = "Shared events"
+            loadSharedEvents()
         case 1:
             titleLabel.text = "Received events"
+            loadReceivedEvents()
         default:
             titleLabel.text = ""
+            sharingEvents = []
+            presentEventsTable.reloadData()
         }
+    }
+    
+    private func loadReceivedEvents() {
+        sharingEvents = eventsManager?.getRecievedEvents() ?? []
+        presentEventsTable.reloadData()
+    }
+    
+    private func loadSharedEvents() {
+        sharingEvents = eventsManager?.getSharedEvents() ?? []
+        presentEventsTable.reloadData()
     }
     
     private func updateSharingModeSegmntCntr() {
         sharingModeSgmntdCntrl.selectedSegmentIndex = selectedSharingModeSgmntdCntrIndex
-        updateTitleLabel(for: selectedSharingModeSgmntdCntrIndex)
+        updateUI(for: selectedSharingModeSgmntdCntrIndex)
     }
 }
 
@@ -50,15 +68,28 @@ class SharingEventsVC: UIViewController {
 
 extension SharingEventsVC: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        10
+        sharingEvents.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
         cell.backgroundColor = .clear
-        cell.textLabel?.text = "Простий текст для рядка \(indexPath.row)"
-            
+        let event = sharingEvents[indexPath.row]
+        cell.textLabel?.text = event.title
+        cell.detailTextLabel?.text = "Start: \(event.startDate), End: \(event.endDate)"
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            eventsManager?.removeSharedEvent(at: indexPath.row)
+            sharingEvents.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
 }
 
