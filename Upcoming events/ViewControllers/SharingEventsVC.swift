@@ -7,6 +7,11 @@
 
 import UIKit
 
+enum SharingMode: Int {
+    case shared = 0
+    case received = 1
+}
+
 class SharingEventsVC: UIViewController {
     
     private var titleLabel = UILabel()
@@ -16,35 +21,33 @@ class SharingEventsVC: UIViewController {
     private var sharingEvents: [EventModel] = []
     var eventsManager: EventsManager?
     
-    var selectedSharingModeSgmntdCntrIndex: Int = 0
+    var selectedSharingMode: SharingMode = .shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         updateSharingModeSegmntCntr()
-        updateUI(for: selectedSharingModeSgmntdCntrIndex)
+        updateUI(for: selectedSharingMode)
     }
     
     // MARK: - Objc methods
     
     @objc private func segmentedControlChanged(_ sender: UISegmentedControl) {
-        updateUI(for: sender.selectedSegmentIndex)
+        if let mode = SharingMode(rawValue: sender.selectedSegmentIndex) {
+            updateUI(for: mode)
+        }
     }
     
     // MARK: - Private methods
     
-    private func updateUI(for index: Int) {
-        switch index {
-        case 0:
+    private func updateUI(for mode: SharingMode) {
+        switch mode {
+        case .shared:
             titleLabel.text = "Shared events"
             loadSharedEvents()
-        case 1:
+        case .received:
             titleLabel.text = "Received events"
             loadReceivedEvents()
-        default:
-            titleLabel.text = ""
-            sharingEvents = []
-            presentEventsTable.reloadData()
         }
     }
     
@@ -59,8 +62,24 @@ class SharingEventsVC: UIViewController {
     }
     
     private func updateSharingModeSegmntCntr() {
-        sharingModeSgmntdCntrl.selectedSegmentIndex = selectedSharingModeSgmntdCntrIndex
-        updateUI(for: selectedSharingModeSgmntdCntrIndex)
+        sharingModeSgmntdCntrl.selectedSegmentIndex = selectedSharingMode.rawValue
+        updateUI(for: selectedSharingMode)
+    }
+    
+    private func showInfoAboutEvent(_ event: EventModel) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        let startDateStr = dateFormatter.string(from: event.startDate)
+        let endDateStr = dateFormatter.string(from: event.endDate)
+        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
+        
+        let alert = UIAlertController(title: event.title, message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(okAction)
+
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -80,9 +99,23 @@ extension SharingEventsVC: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let event = sharingEvents[indexPath.row]
+        showInfoAboutEvent(event)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            eventsManager?.removeSharedEvent(at: indexPath.row)
+            switch sharingModeSgmntdCntrl.selectedSegmentIndex {
+                case SharingMode.shared.rawValue:
+                    eventsManager?.removeSharedEvent(at: indexPath.row)
+                case SharingMode.received.rawValue:
+                    eventsManager?.removeRecievedEvent(at: indexPath.row)
+                default:
+                    break
+                }
+            
             sharingEvents.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }

@@ -29,6 +29,8 @@
 		227D019F2C68F12600ADF63F /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227D019E2C68F12600ADF63F /* MainViewController.swift */; };
 		227D01A42C68F12700ADF63F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 227D01A32C68F12700ADF63F /* Assets.xcassets */; };
 		227D01A72C68F12700ADF63F /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 227D01A62C68F12700ADF63F /* Base */; };
+		228A7CAE2CA2C75500016C05 /* GenerateQRViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228A7CAD2CA2C6EA00016C05 /* GenerateQRViewController.swift */; };
+		228A7CB02CA2EBE200016C05 /* QRScannerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228A7CAF2CA2EBBF00016C05 /* QRScannerVC.swift */; };
 		228CC1802C9D694800CFB4A2 /* UIView+FindViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CC17F2C9D692A00CFB4A2 /* UIView+FindViewController.swift */; };
 		228CC1822C9D830100CFB4A2 /* ShareUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CC1812C9D82F500CFB4A2 /* ShareUtility.swift */; };
 		228CC1842C9DB8C200CFB4A2 /* SharingEventsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CC1832C9DB83500CFB4A2 /* SharingEventsVC.swift */; };
@@ -80,6 +82,8 @@
 		227D01A82C68F12700ADF63F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		227D01AD2C68F12800ADF63F /* Upcoming eventsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Upcoming eventsTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		227D01B72C68F12800ADF63F /* Upcoming eventsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Upcoming eventsUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		228A7CAD2CA2C6EA00016C05 /* GenerateQRViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateQRViewController.swift; sourceTree = "<group>"; };
+		228A7CAF2CA2EBBF00016C05 /* QRScannerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerVC.swift; sourceTree = "<group>"; };
 		228CC17F2C9D692A00CFB4A2 /* UIView+FindViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FindViewController.swift"; sourceTree = "<group>"; };
 		228CC1812C9D82F500CFB4A2 /* ShareUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareUtility.swift; sourceTree = "<group>"; };
 		228CC1832C9DB83500CFB4A2 /* SharingEventsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingEventsVC.swift; sourceTree = "<group>"; };
@@ -169,6 +173,8 @@
 				227D019E2C68F12600ADF63F /* MainViewController.swift */,
 				22C3DC2A2C91E9C3009C203B /* AddNewEventVC.swift */,
 				228CC1832C9DB83500CFB4A2 /* SharingEventsVC.swift */,
+				228A7CAD2CA2C6EA00016C05 /* GenerateQRViewController.swift */,
+				228A7CAF2CA2EBBF00016C05 /* QRScannerVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -368,6 +374,7 @@
 			files = (
 				22641B362C7A257D007F1C39 /* WeekContainerView.swift in Sources */,
 				22048B4B2C6924EB00361F23 /* UIColor+Extension.swift in Sources */,
+				228A7CB02CA2EBE200016C05 /* QRScannerVC.swift in Sources */,
 				22048B492C6924D200361F23 /* UIViewController+KeyboardHandling.swift in Sources */,
 				22641B382C7A259B007F1C39 /* MonthContainerView.swift in Sources */,
 				228CC1842C9DB8C200CFB4A2 /* SharingEventsVC.swift in Sources */,
@@ -386,6 +393,7 @@
 				22541E882C7DEBE400EA124F /* EventModel.swift in Sources */,
 				22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */,
 				22B372A02C8396B5005BA993 /* UIView+TouchThroughView.swift in Sources */,
+				228A7CAE2CA2C75500016C05 /* GenerateQRViewController.swift in Sources */,
 				22048B452C69249D00361F23 /* AppConstants.swift in Sources */,
 				228CC1822C9D830100CFB4A2 /* ShareUtility.swift in Sources */,
 			);

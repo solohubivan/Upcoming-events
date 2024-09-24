@@ -47,7 +47,7 @@ class MainViewController: UIViewController {
                 let sharingEventsVC = SharingEventsVC()
                 sharingEventsVC.eventsManager = self?.eventsManager
                 sharingEventsVC.modalPresentationStyle = .formSheet
-                sharingEventsVC.selectedSharingModeSgmntdCntrIndex = 0
+                sharingEventsVC.selectedSharingMode = .shared
                 self?.present(sharingEventsVC, animated: true, completion: nil)
             }),
             
@@ -57,13 +57,16 @@ class MainViewController: UIViewController {
                 let sharingEventsVC = SharingEventsVC()
                 sharingEventsVC.eventsManager = self?.eventsManager
                 sharingEventsVC.modalPresentationStyle = .formSheet
-                sharingEventsVC.selectedSharingModeSgmntdCntrIndex = 1
+                sharingEventsVC.selectedSharingMode = .received
                 self?.present(sharingEventsVC, animated: true, completion: nil)
             }),
             UIAction(title: "Get event with QR", image: UIImage(systemName: "qrcode"), handler: { [weak self] _ in
                 self?.dismissKeyboard()
                 
                 print("3d button tapped")
+                let QRScannerVC = QRScannerVC()
+                QRScannerVC.modalPresentationStyle = .formSheet
+                self?.present(QRScannerVC, animated: true, completion: nil)
             })
         ]
             

@@ -80,7 +80,7 @@ class EventsManager {
         return receivedEvents
     }
     
-    func removeSharedEvents(at index: Int) {
+    func removeRecievedEvent(at index: Int) {
         receivedEvents.remove(at: index)
         saveReceivedEvents()
     }
@@ -103,6 +103,11 @@ class EventsManager {
     func addSharedEvent(_ event: EventModel) {
         sharedEvents.append(event)
         saveSharedEvents()
+    }
+    
+    func addReceivedEvent(_ event: EventModel) {
+        receivedEvents.append(event)
+        saveReceivedEvents()
     }
     
     func fetchEvents(for timeInterval: Calendar.Component, value: Int, completion: @escaping () -> Void) {
@@ -182,9 +187,18 @@ class EventsManager {
             let shareViewController = shareUtility.createShareViewController(contentToShare: eventInfo, sourceView: sourceView)
             viewController.present(shareViewController, animated: true, completion: nil)
         }
+        
+        let qrCodeAction = UIAlertAction(title: "Share with QR", style: .default) { _ in
+            let qrVC = ShowQRViewController()
+            let eventInfoString = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
+            qrVC.makeQRCodeForString(text: eventInfoString)
+            qrVC.modalPresentationStyle = .formSheet
+            viewController.present(qrVC, animated: true)
+        }
             
         alert.addAction(okAction)
         alert.addAction(shareAction)
+        alert.addAction(qrCodeAction)
             
         viewController.present(alert, animated: true, completion: nil)
     }
