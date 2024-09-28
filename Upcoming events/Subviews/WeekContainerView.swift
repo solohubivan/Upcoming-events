@@ -30,8 +30,12 @@ class WeekContainerView: UIView {
     // MARK: - @objc methods
     
     @objc private func refreshData() {
-        updateWeekEvents(eventsManager?.getEvents() ?? [])
-        refreshControl.endRefreshing()
+        eventsManager?.fetchEvents(for: .weekOfMonth, value: 1) { [weak self] in
+            guard let self = self else { return }
+            let eventsForWeek = self.eventsManager?.getEvents(for: .weekOfMonth, value: 1) ?? []
+            self.updateWeekEvents(eventsForWeek)
+            self.refreshControl.endRefreshing()
+        }
     }
     
     // MARK: - Private methods
@@ -46,7 +50,8 @@ class WeekContainerView: UIView {
     func configureWeekEvents(with manager: EventsManager) {
         self.eventsManager = manager
         currentWeekLabel.text = manager.getCurrentPeriodLabel(for: .weekOfMonth, value: 1)
-        updateWeekEvents(manager.getEvents())
+        let eventsForWeek = manager.getEvents(for: .weekOfMonth, value: 1)
+        updateWeekEvents(eventsForWeek)
     }
 }
 

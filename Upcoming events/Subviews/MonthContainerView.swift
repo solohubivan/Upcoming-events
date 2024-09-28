@@ -30,8 +30,12 @@ class MonthContainerView: UIView {
     // MARK: - @objc methods
     
     @objc private func refreshData() {
-        updateMonthEvents(eventsManager?.getEvents() ?? [])
-        refreshControl.endRefreshing()
+        eventsManager?.fetchEvents(for: .month, value: 1) { [weak self] in
+            guard let self = self else { return }
+            let eventsForMonth = self.eventsManager?.getEvents(for: .month, value: 1) ?? []
+            self.updateMonthEvents(eventsForMonth)
+            self.refreshControl.endRefreshing()
+        }
     }
     
     // MARK: - Public methods
@@ -39,7 +43,8 @@ class MonthContainerView: UIView {
     func configureMonthEvents(with manager: EventsManager) {
         self.eventsManager = manager
         currentMonthLabel.text = manager.getCurrentPeriodLabel(for: .month, value: 1)
-        updateMonthEvents(manager.getEvents())
+        let eventsForMonth = manager.getEvents(for: .month, value: 1)
+        updateMonthEvents(eventsForMonth)
     }
     
     // MARK: - Private methods

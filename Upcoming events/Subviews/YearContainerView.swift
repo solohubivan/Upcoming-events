@@ -30,8 +30,12 @@ class YearContainerView: UIView {
     // MARK: - @objc methods
     
     @objc private func refreshData() {
-        updateYearEvents(eventsManager?.getEvents() ?? [])
-        refreshControl.endRefreshing()
+        eventsManager?.fetchEvents(for: .year, value: 1) { [weak self] in
+            guard let self = self else { return }
+            let eventsForYear = self.eventsManager?.getEvents(for: .year, value: 1) ?? []
+            self.updateYearEvents(eventsForYear)
+            self.refreshControl.endRefreshing()
+        }
     }
     
     // MARK: - Public methods
@@ -39,7 +43,8 @@ class YearContainerView: UIView {
     func configureYearEvents(with manager: EventsManager) {
         self.eventsManager = manager
         currentYearLabel.text = manager.getCurrentPeriodLabel(for: .year, value: 1)
-        updateYearEvents(manager.getEvents())
+        let eventsForYear = manager.getEvents(for: .year, value: 1)
+        updateYearEvents(eventsForYear)
     }
     
     // MARK: - Private methods

@@ -52,7 +52,7 @@ class SharingEventsVC: UIViewController {
     }
     
     private func loadReceivedEvents() {
-        sharingEvents = eventsManager?.getRecievedEvents() ?? []
+        sharingEvents = eventsManager?.getReceivedEvents() ?? []
         presentEventsTable.reloadData()
     }
     
@@ -111,7 +111,7 @@ extension SharingEventsVC: UITableViewDataSource, UITableViewDelegate {
                 case SharingMode.shared.rawValue:
                     eventsManager?.removeSharedEvent(at: indexPath.row)
                 case SharingMode.received.rawValue:
-                    eventsManager?.removeRecievedEvent(at: indexPath.row)
+                    eventsManager?.removeReceivedEvent(at: indexPath.row)
                 default:
                     break
                 }

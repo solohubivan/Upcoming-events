@@ -56,7 +56,6 @@ class AddNewEventVC: UIViewController {
         dismissKeyboard()
         eventTitleTextField.text = ""
         setInitialDatePickers()
-//        dismiss(animated: true, completion: nil)
         showAlertForAdded(newEvent: newEvent)
     }
     

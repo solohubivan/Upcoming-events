@@ -69,18 +69,27 @@ class EventsManager {
     
     // MARK: - Publick methods
 
-    func getEvents() -> [EventModel] {
+    func getEvents(for timeInterval: Calendar.Component, value: Int) -> [EventModel] {
         loadAddedEvents()
         removePastEvents()
-        return addedEvents + events
+
+        let startDate = Date()
+        guard let endDate = Calendar.current.date(byAdding: timeInterval, value: value, to: startDate) else { return [] }
+        let filteredAddedEvents = addedEvents.filter { event in
+            return event.startDate >= startDate && event.startDate <= endDate
+        }
+        let filteredEvents = events.filter { event in
+            return event.startDate >= startDate && event.startDate <= endDate
+        }
+        return filteredAddedEvents + filteredEvents
     }
     
-    func getRecievedEvents() -> [EventModel] {
+    func getReceivedEvents() -> [EventModel] {
         loadReceivedEvents()
         return receivedEvents
     }
     
-    func removeRecievedEvent(at index: Int) {
+    func removeReceivedEvent(at index: Int) {
         receivedEvents.remove(at: index)
         saveReceivedEvents()
     }
@@ -129,6 +138,43 @@ class EventsManager {
         completion()
     }
     
+    func showEventDetailsAlert(for event: EventModel, in viewController: UIViewController, sourceView: UIView) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+            
+        let startDateStr = dateFormatter.string(from: event.startDate)
+        let endDateStr = dateFormatter.string(from: event.endDate)
+            
+        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
+        let alert = UIAlertController(title: "Event \"\(event.title)\"", message: message, preferredStyle: .alert)
+            
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let shareAction = UIAlertAction(title: "Share", style: .default) { _ in
+            self.addSharedEvent(event)
+            let shareUtility = ShareUtility()
+            let eventInfo = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
+            let shareViewController = shareUtility.createShareViewController(contentToShare: eventInfo, sourceView: sourceView)
+            viewController.present(shareViewController, animated: true, completion: nil)
+        }
+        
+        let qrCodeAction = UIAlertAction(title: "Share with QR", style: .default) { _ in
+            let qrVC = ShowQRViewController()
+            let eventInfoString = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
+            qrVC.makeQRCodeForString(text: eventInfoString)
+            qrVC.modalPresentationStyle = .formSheet
+            viewController.present(qrVC, animated: true)
+        }
+            
+        alert.addAction(okAction)
+        alert.addAction(shareAction)
+        alert.addAction(qrCodeAction)
+            
+        viewController.present(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: - Calendar settings
+    
     func getCurrentPeriodLabel(for timeInterval: Calendar.Component, value: Int) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d"
@@ -168,38 +214,26 @@ class EventsManager {
         }
     }
     
-    func showEventDetailsAlert(for event: EventModel, in viewController: UIViewController, sourceView: UIView) {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .short
+    func createClockTimeLabel(object: UISegmentedControl) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "hh : mm"
             
-        let startDateStr = dateFormatter.string(from: event.startDate)
-        let endDateStr = dateFormatter.string(from: event.endDate)
+        let currentTime = formatter.string(from: Date())
             
-        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
-        let alert = UIAlertController(title: "Event \"\(event.title)\"", message: message, preferredStyle: .alert)
-            
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        let shareAction = UIAlertAction(title: "Share", style: .default) { _ in
-            self.addSharedEvent(event)
-            let shareUtility = ShareUtility()
-            let eventInfo = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
-            let shareViewController = shareUtility.createShareViewController(contentToShare: eventInfo, sourceView: sourceView)
-            viewController.present(shareViewController, animated: true, completion: nil)
+        let hourFormatter = DateFormatter()
+        hourFormatter.locale = Locale(identifier: "en_US_POSIX")
+        hourFormatter.dateFormat = "a"
+        let amPmString = hourFormatter.string(from: Date())
+
+        let timeMode: TimeMode = amPmString == "AM" ? .am : .pm
+        switch timeMode {
+        case .am:
+            object.selectedSegmentIndex = 0
+        case .pm:
+            object.selectedSegmentIndex = 1
         }
         
-        let qrCodeAction = UIAlertAction(title: "Share with QR", style: .default) { _ in
-            let qrVC = ShowQRViewController()
-            let eventInfoString = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
-            qrVC.makeQRCodeForString(text: eventInfoString)
-            qrVC.modalPresentationStyle = .formSheet
-            viewController.present(qrVC, animated: true)
-        }
-            
-        alert.addAction(okAction)
-        alert.addAction(shareAction)
-        alert.addAction(qrCodeAction)
-            
-        viewController.present(alert, animated: true, completion: nil)
+        return currentTime
     }
 }

@@ -13,6 +13,7 @@
 		22048B4B2C6924EB00361F23 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */; };
 		22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */; };
 		22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */; };
+		2226D5052CA3570E003C4213 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 2226D5042CA3570E003C4213 /* FSCalendar */; };
 		223429962C7B56D900D906E4 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223429952C7B56D900D906E4 /* CustomTableViewCell.swift */; };
 		224110FE2C7F4ED6006372BA /* EventsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224110FD2C7F4ED6006372BA /* EventsManager.swift */; };
 		22541E882C7DEBE400EA124F /* EventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22541E872C7DEBE400EA124F /* EventModel.swift */; };
@@ -96,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2226D5052CA3570E003C4213 /* FSCalendar in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +254,7 @@
 			);
 			name = "Upcoming events";
 			packageProductDependencies = (
+				2226D5042CA3570E003C4213 /* FSCalendar */,
 			);
 			productName = "Upcoming events";
 			productReference = 227D01972C68F12600ADF63F /* Upcoming events.app */;
@@ -326,6 +329,7 @@
 			);
 			mainGroup = 227D018E2C68F12600ADF63F;
 			packageReferences = (
+				2226D5032CA3570E003C4213 /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			productRefGroup = 227D01982C68F12600ADF63F /* Products */;
 			projectDirPath = "";
@@ -733,6 +737,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2226D5032CA3570E003C4213 /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2226D5042CA3570E003C4213 /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2226D5032CA3570E003C4213 /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 227D018F2C68F12600ADF63F /* Project object */;
 }

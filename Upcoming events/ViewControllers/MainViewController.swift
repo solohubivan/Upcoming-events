@@ -63,7 +63,6 @@ class MainViewController: UIViewController {
             UIAction(title: "Get event with QR", image: UIImage(systemName: "qrcode"), handler: { [weak self] _ in
                 self?.dismissKeyboard()
                 
-                print("3d button tapped")
                 let QRScannerVC = QRScannerVC()
                 QRScannerVC.modalPresentationStyle = .formSheet
                 self?.present(QRScannerVC, animated: true, completion: nil)
@@ -117,7 +116,7 @@ class MainViewController: UIViewController {
         case .custom:
             eventsManager.fetchEvents(for: .day, value: 1) { [weak self] in
                 guard let self = self else { return }
- //               self.customContainerView.updateCustomEvents(self.eventsManager.getEvents())
+                self.customContainerView.configureCustomEvents(with: self.eventsManager)
                 self.customContainerView.isHidden = false
             }
         }
@@ -188,7 +187,6 @@ extension MainViewController {
         titleLabel.font = UIFont(name: "Poppins-SemiBold", size: 34)
         titleLabel.textAlignment = .center
         titleLabel.text = "My Events"
-        
         view.addSubview(titleLabel)
     }
     
