@@ -69,7 +69,7 @@ class AddNewEventVC: UIViewController {
     }
     
     private func showAlertForEmptyTitle() {
-        let alert = UIAlertController(title: "Enter event title pls", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: AppConstants.AlertMessages.titleEnterEventTitlePls, message: nil, preferredStyle: .alert)
         present(alert, animated: true)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -85,10 +85,10 @@ class AddNewEventVC: UIViewController {
         let startDateStr = dateFormatter.string(from: newEvent.startDate)
         let endDateStr = dateFormatter.string(from: newEvent.endDate)
 
-        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
+        let message = "\(AppConstants.AlertMessages.messageEventsStart): \(startDateStr)\n\(AppConstants.AlertMessages.messageEventsEnd): \(endDateStr)"
             
-        let alert = UIAlertController(title: "Event \"\(newEvent.title)\" added", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let alert = UIAlertController(title: "\(AppConstants.AlertMessages.titleEvent) \"\(newEvent.title)\" \(AppConstants.AlertMessages.titleAdded)", message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: AppConstants.ButtonTitles.ok, style: .default, handler: nil)
         alert.addAction(okAction)
             
         present(alert, animated: true, completion: nil)
@@ -136,11 +136,11 @@ extension AddNewEventVC {
     
     private func setupTitleLabel() {
         titleLabel.textColor = .black
-        titleLabel.font = UIFont(name: "Poppins-SemiBold", size: 24)
+        titleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 24, textStyle: .title1)
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.text = "Create new event here"
+        titleLabel.text = AppConstants.AddNewEventVC.titleLabelText
         view.addSubview(titleLabel)
     }
     
@@ -149,9 +149,8 @@ extension AddNewEventVC {
         eventTitleTextField.borderStyle = .none
         eventTitleTextField.layer.cornerRadius = 10
         eventTitleTextField.layer.backgroundColor = UIColor.white.cgColor
-        eventTitleTextField.textColor = .black
-        eventTitleTextField.font = UIFont(name: "Poppins-Regular", size: 18)
-        eventTitleTextField.placeholder = "Enter the event title here"
+        eventTitleTextField.font = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 18, textStyle: .body)
+        eventTitleTextField.placeholder = AppConstants.AddNewEventVC.tFPlaceholderText
         eventTitleTextField.overrideUserInterfaceStyle = .light
         placeholderIndent()
         view.addSubview(eventTitleTextField)
@@ -164,8 +163,8 @@ extension AddNewEventVC {
     }
     
     private func setupStartDateLabel() {
-        startDateLabel.text = "Start date:"
-        startDateLabel.font = UIFont(name: "Poppins-Medium", size: 18)
+        startDateLabel.text = AppConstants.AddNewEventVC.startDateLabelText
+        startDateLabel.setCustomFont(name: AppConstants.Fonts.poppinsMedium, size: 18, textStyle: .body)
         startDateLabel.textColor = .black
         startDateLabel.textAlignment = .left
         view.addSubview(startDateLabel)
@@ -178,8 +177,8 @@ extension AddNewEventVC {
     }
     
     private func setupEndDateLabel() {
-        endDateLabel.text = "End date:"
-        endDateLabel.font = UIFont(name: "Poppins-Medium", size: 18)
+        endDateLabel.text = AppConstants.AddNewEventVC.endDateLabelText
+        endDateLabel.setCustomFont(name: AppConstants.Fonts.poppinsMedium, size: 18, textStyle: .body)
         endDateLabel.textColor = .black
         endDateLabel.textAlignment = .left
         view.addSubview(endDateLabel)
@@ -192,9 +191,9 @@ extension AddNewEventVC {
     }
     
     private func setupAddEventButton() {
-        addEventButton.setTitle("Create new event", for: .normal)
+        addEventButton.setTitle(AppConstants.ButtonTitles.createNewEvent, for: .normal)
         addEventButton.setTitleColor(.white, for: .normal)
-        addEventButton.titleLabel?.font = UIFont(name: "Poppins-Regular", size: 18)
+        addEventButton.titleLabel?.font = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 18, textStyle: .body)
         addEventButton.backgroundColor = .hex5856D6
         addEventButton.layer.cornerRadius = 6
         addEventButton.addTarget(self, action: #selector(addNewEvent), for: .touchUpInside)

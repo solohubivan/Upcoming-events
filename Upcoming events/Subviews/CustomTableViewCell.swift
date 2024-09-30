@@ -80,18 +80,18 @@ class CustomTableViewCell: UITableViewCell {
     }
     
     private func setupEventNameLabel() {
-        eventNameLabel.text = "Event Item"
+        eventNameLabel.text = ""
         eventNameLabel.textColor = .black
-        eventNameLabel.font = UIFont(name: "Poppins-Regular", size: 17)
+        eventNameLabel.setCustomFont(name: AppConstants.Fonts.poppinsRegular, size: 17, textStyle: .body)
         eventNameLabel.textAlignment = .left
         
         self.addSubview(eventNameLabel)
     }
     
     private func setupRemainingTimeLabel() {
-        remainingTimeLabel.text = "less than a min"
+        remainingTimeLabel.text = ""
         remainingTimeLabel.textColor = UIColor.hex5856D6
-        remainingTimeLabel.font = UIFont(name: "Poppins-Regular", size: 17)
+        remainingTimeLabel.setCustomFont(name: AppConstants.Fonts.poppinsRegular, size: 17, textStyle: .body)
         remainingTimeLabel.textAlignment = .right
         
         self.addSubview(remainingTimeLabel)

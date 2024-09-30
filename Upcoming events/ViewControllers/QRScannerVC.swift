@@ -93,9 +93,9 @@ class QRScannerVC: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         guard components.count >= 3 else { return nil }
         
-        let title = components[0].replacingOccurrences(of: "Event: ", with: "")
-        let startDateString = components[1].replacingOccurrences(of: "Start: ", with: "")
-        let endDateString = components[2].replacingOccurrences(of: "End: ", with: "")
+        let title = components[0].replacingOccurrences(of: "\(AppConstants.AlertMessages.titleEvent): ", with: "")
+        let startDateString = components[1].replacingOccurrences(of: "\(AppConstants.AlertMessages.messageEventsStart): ", with: "")
+        let endDateString = components[2].replacingOccurrences(of: "\(AppConstants.AlertMessages.messageEventsEnd): ", with: "")
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium

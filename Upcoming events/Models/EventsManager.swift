@@ -22,12 +22,12 @@ class EventsManager {
     
     private func saveReceivedEvents() {
         if let data = try? JSONEncoder().encode(receivedEvents) {
-            UserDefaults.standard.set(data, forKey: "receivedEvents")
+            UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsReceivedEventsKey)
         }
     }
     
     private func loadReceivedEvents() {
-        if let data = UserDefaults.standard.data(forKey: "receivedEvents"),
+        if let data = UserDefaults.standard.data(forKey: AppConstants.Keys.userDefaultsReceivedEventsKey),
            let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
             receivedEvents = savedEvents
         }
@@ -35,12 +35,12 @@ class EventsManager {
     
     private func saveSharedEvents() {
         if let data = try? JSONEncoder().encode(sharedEvents) {
-            UserDefaults.standard.set(data, forKey: "sharedEvents")
+            UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsSharedEventsKey)
         }
     }
 
     private func loadSharedEvents() {
-        if let data = UserDefaults.standard.data(forKey: "sharedEvents"),
+        if let data = UserDefaults.standard.data(forKey: AppConstants.Keys.userDefaultsSharedEventsKey),
             let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
             sharedEvents = savedEvents
         }
@@ -48,12 +48,12 @@ class EventsManager {
     
     private func saveAddedEvents() {
         if let data = try? JSONEncoder().encode(addedEvents) {
-            UserDefaults.standard.set(data, forKey: "addedEvents")
+            UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsAddedEventsKey)
         }
     }
 
     private func loadAddedEvents() {
-        if let data = UserDefaults.standard.data(forKey: "addedEvents"),
+        if let data = UserDefaults.standard.data(forKey: AppConstants.Keys.userDefaultsAddedEventsKey),
             let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
             addedEvents = savedEvents
         }
@@ -81,7 +81,9 @@ class EventsManager {
         let filteredEvents = events.filter { event in
             return event.startDate >= startDate && event.startDate <= endDate
         }
-        return filteredAddedEvents + filteredEvents
+        let combinedEvents = (filteredAddedEvents + filteredEvents).sorted { $0.startDate < $1.startDate }
+        
+        return combinedEvents
     }
     
     func getReceivedEvents() -> [EventModel] {
@@ -130,7 +132,7 @@ class EventsManager {
         events.removeAll()
                     
         for ekEvent in ekEvents {
-            let event = EventModel(title: ekEvent.title ?? "No title", startDate: ekEvent.startDate, endDate: ekEvent.endDate)
+            let event = EventModel(title: ekEvent.title ?? AppConstants.AlertMessages.noTitle, startDate: ekEvent.startDate, endDate: ekEvent.endDate)
             events.append(event)
         }
         loadAddedEvents()
@@ -146,21 +148,21 @@ class EventsManager {
         let startDateStr = dateFormatter.string(from: event.startDate)
         let endDateStr = dateFormatter.string(from: event.endDate)
             
-        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
-        let alert = UIAlertController(title: "Event \"\(event.title)\"", message: message, preferredStyle: .alert)
+        let message = "\(AppConstants.AlertMessages.messageEventsStart): \(startDateStr)\n\(AppConstants.AlertMessages.messageEventsEnd): \(endDateStr)"
+        let alert = UIAlertController(title: "\(AppConstants.AlertMessages.titleEvent) \"\(event.title)\"", message: message, preferredStyle: .alert)
             
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        let shareAction = UIAlertAction(title: "Share", style: .default) { _ in
+        let okAction = UIAlertAction(title: AppConstants.ButtonTitles.ok, style: .default, handler: nil)
+        let shareAction = UIAlertAction(title: AppConstants.AlertMessages.shareAlertAction, style: .default) { _ in
             self.addSharedEvent(event)
             let shareUtility = ShareUtility()
-            let eventInfo = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
+            let eventInfo = "\(AppConstants.AlertMessages.titleEvent): \(event.title)\n\(AppConstants.AlertMessages.messageEventsStart): \(startDateStr)\n\(AppConstants.AlertMessages.messageEventsEnd): \(endDateStr)"
             let shareViewController = shareUtility.createShareViewController(contentToShare: eventInfo, sourceView: sourceView)
             viewController.present(shareViewController, animated: true, completion: nil)
         }
         
-        let qrCodeAction = UIAlertAction(title: "Share with QR", style: .default) { _ in
+        let qrCodeAction = UIAlertAction(title: AppConstants.AlertMessages.shareWithQRAlertAction, style: .default) { _ in
             let qrVC = ShowQRViewController()
-            let eventInfoString = "Event: \(event.title)\nStart: \(startDateStr)\nEnd: \(endDateStr)"
+            let eventInfoString = "\(AppConstants.AlertMessages.titleEvent): \(event.title)\n\(AppConstants.AlertMessages.messageEventsStart): \(startDateStr)\n\(AppConstants.AlertMessages.messageEventsEnd): \(endDateStr)"
             qrVC.makeQRCodeForString(text: eventInfoString)
             qrVC.modalPresentationStyle = .formSheet
             viewController.present(qrVC, animated: true)
@@ -210,7 +212,7 @@ class EventsManager {
         case (_, _, let m) where m > 0:
             return "\(m)m"
         default:
-            return "less than a min"
+            return AppConstants.AlertMessages.lessThanMin
         }
     }
     

@@ -63,7 +63,7 @@ extension MonthContainerView: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as? CustomTableViewCell ?? CustomTableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: AppConstants.Identifiers.customTableCell, for: indexPath) as? CustomTableViewCell ?? CustomTableViewCell()
         
         let event = events[indexPath.row]
         cell.configureCell(with: event)
@@ -101,7 +101,7 @@ extension MonthContainerView {
     private func setupTitleLabel() {
         currentMonthLabel.text = ""
         currentMonthLabel.textColor = .black
-        currentMonthLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
+        currentMonthLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
         currentMonthLabel.textAlignment = .left
         self.addSubview(currentMonthLabel)
     }
@@ -109,7 +109,7 @@ extension MonthContainerView {
     private func setupTable() {
         presentEventsTable.dataSource = self
         presentEventsTable.delegate = self
-        presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: "CustomCell")
+        presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: AppConstants.Identifiers.customTableCell)
         presentEventsTable.separatorStyle = .none
         presentEventsTable.backgroundColor = .white
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)

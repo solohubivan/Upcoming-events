@@ -33,6 +33,7 @@ class CustomContainerView: UIView {
     private let eventStore = EKEventStore()
     private var events: [EventModel] = []
     private var tableData: [EventModel] = []
+    private var refreshControl = UIRefreshControl()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -46,8 +47,17 @@ class CustomContainerView: UIView {
 
     // MARK: - objc methods
     
+    @objc private func refreshData() {
+        guard let selectedDate = calendar.selectedDate else {
+            refreshControl.endRefreshing()
+            return
+        }
+        handleDateSelection(selectedDate)
+        refreshControl.endRefreshing()
+    }
+    
     @objc private func donePressed() {
-        guard let selectedDate = calendar.selectedDate else { return }
+        let selectedDate = calendar.selectedDate ?? Date()
         let selectedTime = timePicker.date
         
         var selectedDateTimeComponents = Calendar.current.dateComponents([.year, .month, .day], from: selectedDate)
@@ -67,20 +77,6 @@ class CustomContainerView: UIView {
             }
         }
     }
-    
-    private func filterEvents(after selectedDateTime: Date) -> [EventModel] {
-        var filteringEvents = self.events
-        for event in filteringEvents {
-            let beginEvent = event.startDate
-            if beginEvent > selectedDateTime {
-                if let index = filteringEvents.firstIndex(where: { $0.startDate == beginEvent }) {
-                    filteringEvents.remove(at: index)
-                }
-            }
-        }
-        return filteringEvents
-    }
-    
     
     @objc private func nextMonthButtonTapped() {
         guard let nextMonth = Calendar.current.date(byAdding: .month, value: 1, to: calendar.currentPage) else { return }
@@ -141,11 +137,11 @@ class CustomContainerView: UIView {
         let monthString = dateFormatter.string(from: date)
 
         let monthAttributedString = NSAttributedString(string: monthString, attributes: [
-            .font: UIFont(name: "Poppins-Semibold", size: 20) ?? UIFont.systemFont(ofSize: 20),
+            .font: UIFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20) ?? UIFont.systemFont(ofSize: 20),
             .foregroundColor: UIColor.hex5856D6
         ])
 
-        let chevronImage = UIImage(systemName: "chevron.right")?.withTintColor(.hex5856D6, renderingMode: .alwaysOriginal)
+        let chevronImage = UIImage(systemName: AppConstants.ImageNames.chevronRight)?.withTintColor(.hex5856D6, renderingMode: .alwaysOriginal)
         
         let chevronAttachment = NSTextAttachment()
         chevronAttachment.image = chevronImage
@@ -165,7 +161,7 @@ class CustomContainerView: UIView {
         self.tableData = newEvents
         presentEventsTable.reloadData()
     }
-//  В логіку
+    
     private func updateCustomPeriodLabel(from startDate: Date, to endDate: Date) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d"
@@ -183,6 +179,60 @@ class CustomContainerView: UIView {
             customPeriodEventsLabel.text = "\(startDateString), \(startYear) - \(endDateString), \(endYear)"
         }
     }
+    
+    private func filterEvents(after selectedDateTime: Date) -> [EventModel] {
+        var filteringEvents = self.events
+        for event in filteringEvents {
+            let beginEvent = event.startDate
+            if beginEvent > selectedDateTime {
+                if let index = filteringEvents.firstIndex(where: { $0.startDate == beginEvent }) {
+                    filteringEvents.remove(at: index)
+                }
+            }
+        }
+        return filteringEvents
+    }
+    
+    private func handleDateSelection(_ date: Date) {
+        let today = Calendar.current.startOfDay(for: Date())
+        let selectedDay = Calendar.current.startOfDay(for: date)
+        let numberOfDays = Calendar.current.dateComponents([.day], from: today, to: selectedDay).day ?? 0
+        
+        if numberOfDays < 0 {
+            handlePastDateSelection()
+        } else {
+            fetchAndDisplayEvents(for: date, daysAhead: numberOfDays + 1)
+        }
+    }
+
+    private func handlePastDateSelection() {
+        customPeriodEventsLabel.text = "\(AppConstants.AlertMessages.selectDateUpToday) :)"
+        self.tableData = []
+        presentEventsTable.reloadData()
+    }
+
+    private func fetchAndDisplayEvents(for date: Date, daysAhead: Int) {
+        updateCustomPeriodLabel(from: Date(), to: date)
+        
+        eventsManager.fetchEvents(for: .day, value: daysAhead) { [weak self] in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.events = self.eventsManager.getEvents(for: .day, value: daysAhead)
+                self.tableData = self.events
+                self.presentEventsTable.reloadData()
+            }
+        }
+    }
+    
+    private func showEventDetails(at indexPath: IndexPath) {
+        let event = tableData[indexPath.row]
+            
+        if let viewController = self.findViewController() {
+            if let cell = presentEventsTable.cellForRow(at: indexPath) {
+                eventsManager.showEventDetailsAlert(for: event, in: viewController, sourceView: cell)
+            }
+        }
+    }
 }
 
 // MARK: - UITableView delegate
@@ -193,11 +243,16 @@ extension CustomContainerView: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CustomCell", for: indexPath) as? CustomTableViewCell ?? CustomTableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: AppConstants.Identifiers.customTableCell, for: indexPath) as? CustomTableViewCell ?? CustomTableViewCell()
         let event = tableData[indexPath.row]
         cell.configureCell(with: event)
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        showEventDetails(at: indexPath)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -213,25 +268,7 @@ extension CustomContainerView: FSCalendarDataSource, FSCalendarDelegate {
     }
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        let today = Calendar.current.startOfDay(for: Date())
-        let selectedDay = Calendar.current.startOfDay(for: date)
-        let numberOfDays = Calendar.current.dateComponents([.day], from: today, to: selectedDay).day ?? 0
-        
-        if numberOfDays < 0 {
-            customPeriodEventsLabel.text = "Please select a date up today :)"
-            self.tableData = []
-            presentEventsTable.reloadData()
-        } else {
-            updateCustomPeriodLabel(from: Date(), to: date)
-
-            eventsManager.fetchEvents(for: .day, value: numberOfDays + 1) { [weak self] in
-                DispatchQueue.main.async {
-                    self?.events = self?.eventsManager.getEvents(for: .day, value: numberOfDays + 1) ?? []
-                    self?.tableData = self?.eventsManager.getEvents(for: .day, value: numberOfDays + 1) ?? []
-                    self?.presentEventsTable.reloadData()
-                }
-            }
-        }
+        handleDateSelection(date)
     }
 }
 
@@ -272,8 +309,8 @@ extension CustomContainerView {
     }
 
     private func setupMonthLabel() {
-        updateCustomPeriodLabel(from: Date(), to: Date())
-        currentMonthLabel.font = UIFont(name: "Poppins-Semibold", size: 20)
+        updateMonthLabel(for: calendar.currentPage)
+        currentMonthLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
         currentMonthLabel.textColor = .hex5856D6
         currentMonthLabel.textAlignment = .left
         selectDataView.addSubview(currentMonthLabel)
@@ -281,13 +318,13 @@ extension CustomContainerView {
     
     private func setupLeftRightButtons() {
         let rightButton = UIButton()
-        let rightButtonImage = UIImage(named: "rightChevron")
+        let rightButtonImage = UIImage(named: AppConstants.ImageNames.rightChevronAssets)
         rightButton.setImage(rightButtonImage, for: .normal)
         rightButton.imageView?.contentMode = .scaleAspectFit
         rightButton.tintColor = .hex5856D6
         
         let leftButton = UIButton()
-        let leftButtonImage = UIImage(named: "leftChevron")
+        let leftButtonImage = UIImage(named: AppConstants.ImageNames.leftChevronAssets)
         leftButton.setImage(leftButtonImage, for: .normal)
         leftButton.imageView?.contentMode = .scaleAspectFit
         leftButton.tintColor = .hex5856D6
@@ -318,35 +355,34 @@ extension CustomContainerView {
         calendar.scrollEnabled = true
         calendar.placeholderType = .none
         calendar.headerHeight = 0
-        
         calendar.appearance.selectionColor = UIColor.hex5856D6
-        calendar.appearance.weekdayFont = UIFont(name: "Poppins-Semibold", size: 16)
+        calendar.appearance.weekdayFont = UIFont.customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 16, textStyle: .body)
         calendar.appearance.weekdayTextColor = UIColor.hex3C3C434D
         calendar.appearance.caseOptions = [.weekdayUsesUpperCase]
-        calendar.appearance.titleFont = UIFont(name: "Poppins-Regular", size: 18)
+        calendar.appearance.titleFont = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 18, textStyle: .body)
         calendar.appearance.titleDefaultColor = .hex5856D6
         self.addSubview(calendar)
     }
     
     private func setupTimeTitleLabel() {
-        timeTitleLabel.text = "Time"
-        timeTitleLabel.font = UIFont(name: "Poppins-Semibold", size: 20)
+        timeTitleLabel.text = AppConstants.CustomContainerView.timetitleLabelText
+        timeTitleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .body)
         timeTitleLabel.textColor = .black
         selectDataView.addSubview(timeTitleLabel)
     }
     
     private func setupTimeModeSegmCntrl() {
-        timeModeSegmCntrl = UISegmentedControl(items: ["AM", "PM"])
+        timeModeSegmCntrl = UISegmentedControl(items: [AppConstants.CustomContainerView.amSgmntCtrlItemText, AppConstants.CustomContainerView.pmSgmntCtrlItemText])
         timeModeSegmCntrl.selectedSegmentIndex = 0
         timeModeSegmCntrl.backgroundColor = .hex767680
         timeModeSegmCntrl.overrideUserInterfaceStyle = .light
         timeModeSegmCntrl.isUserInteractionEnabled = false
         
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "Poppins-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+            .font: UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 16, textStyle: .body)
         ]
         let selectedSegmAtributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "Poppins-Semibold", size: 16) ?? UIFont.systemFont(ofSize: 16)
+            .font: UIFont.customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 16, textStyle: .body)
         ]
             
         timeModeSegmCntrl.setTitleTextAttributes(attributes, for: .normal)
@@ -357,7 +393,7 @@ extension CustomContainerView {
     
     private func setupSelectTimeButton() {
         selectTimeButton.setTitle(eventsManager.createClockTimeLabel(object: timeModeSegmCntrl), for: .normal)
-        selectTimeButton.titleLabel?.font = UIFont(name: "Poppins-Regular", size: 22)
+        selectTimeButton.titleLabel?.font = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 22, textStyle: .body)
         selectTimeButton.setTitleColor(.black, for: .normal)
         selectTimeButton.layer.cornerRadius = 6
         selectTimeButton.layer.backgroundColor = UIColor.hex767680.cgColor
@@ -369,7 +405,7 @@ extension CustomContainerView {
     private func setupCustomPeriodEventsLabel() {
         customPeriodEventsLabel.text = eventsManager.getCurrentPeriodLabel(for: .day, value: 1)
         customPeriodEventsLabel.textColor = .black
-        customPeriodEventsLabel.font = UIFont(name: "Poppins-SemiBold", size: 20)
+        customPeriodEventsLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .body)
         customPeriodEventsLabel.textAlignment = .left
         self.addSubview(customPeriodEventsLabel)
     }
@@ -377,9 +413,11 @@ extension CustomContainerView {
     private func setupTable() {
         presentEventsTable.dataSource = self
         presentEventsTable.delegate = self
-        presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: "CustomCell")
+        presentEventsTable.register(CustomTableViewCell.self, forCellReuseIdentifier: AppConstants.Identifiers.customTableCell)
         presentEventsTable.separatorStyle = .none
         presentEventsTable.backgroundColor = .white
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        presentEventsTable.refreshControl = refreshControl
         self.addSubview(presentEventsTable)
     }
     
@@ -389,6 +427,7 @@ extension CustomContainerView {
         timePicker.locale = Locale(identifier: "en_US_POSIX")
         timePicker.calendar = Calendar.current
         timePicker.backgroundColor = .white
+        timePicker.overrideUserInterfaceStyle = .light
         
         let spacer = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         spacer.width = 16
@@ -425,7 +464,7 @@ extension CustomContainerView {
             .top(anchor: selectDataView.topAnchor, constant: 16),
             .leading(anchor: selectDataView.leadingAnchor, constant: 16),
             .height(constant: 24),
-            .width(constant: 200)
+            .width(constant: 220)
         ])
         
         calendar.addConstraints(to_view: selectDataView, [
@@ -438,7 +477,7 @@ extension CustomContainerView {
         timeTitleLabel.addConstraints(to_view: selectDataView, [
             .top(anchor: calendar.bottomAnchor, constant: 5),
             .leading(anchor: selectDataView.leadingAnchor, constant: 16),
-            .width(constant: 50),
+            .width(constant: 80),
             .height(constant: 36)
         ])
         

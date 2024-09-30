@@ -43,10 +43,10 @@ class SharingEventsVC: UIViewController {
     private func updateUI(for mode: SharingMode) {
         switch mode {
         case .shared:
-            titleLabel.text = "Shared events"
+            titleLabel.text = AppConstants.SharingEventsVC.sharedTitleLabelText
             loadSharedEvents()
         case .received:
-            titleLabel.text = "Received events"
+            titleLabel.text = AppConstants.SharingEventsVC.receivedTitleLabelText
             loadReceivedEvents()
         }
     }
@@ -72,11 +72,11 @@ class SharingEventsVC: UIViewController {
         dateFormatter.timeStyle = .short
         let startDateStr = dateFormatter.string(from: event.startDate)
         let endDateStr = dateFormatter.string(from: event.endDate)
-        let message = "Start: \(startDateStr)\nEnd: \(endDateStr)"
+        let message = "\(AppConstants.AlertMessages.messageEventsStart): \(startDateStr)\n\(AppConstants.AlertMessages.messageEventsEnd): \(endDateStr)"
         
         let alert = UIAlertController(title: event.title, message: message, preferredStyle: .alert)
         
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let okAction = UIAlertAction(title: AppConstants.ButtonTitles.ok, style: .default, handler: nil)
         alert.addAction(okAction)
 
         present(alert, animated: true, completion: nil)
@@ -91,11 +91,12 @@ extension SharingEventsVC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: AppConstants.Identifiers.defaultTableCell, for: indexPath)
         cell.backgroundColor = .clear
+        cell.textLabel?.textColor = .black
         let event = sharingEvents[indexPath.row]
         cell.textLabel?.text = event.title
-        cell.detailTextLabel?.text = "Start: \(event.startDate), End: \(event.endDate)"
+        cell.detailTextLabel?.text = "\(AppConstants.AlertMessages.messageEventsStart): \(event.startDate), \(AppConstants.AlertMessages.messageEventsEnd): \(event.endDate)"
         return cell
     }
     
@@ -147,24 +148,24 @@ extension SharingEventsVC {
     
     private func setupTitleLabel() {
         titleLabel.textColor = .black
-        titleLabel.font = UIFont(name: "Poppins-SemiBold", size: 24)
+        titleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 24, textStyle: .title1)
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.text = "Received/Sharing events"
+        titleLabel.text = ""
         view.addSubview(titleLabel)
     }
     
     private func setupSharingModeSgmntdCntrl() {
-        sharingModeSgmntdCntrl = UISegmentedControl(items: ["Shared", "Received"])
+        sharingModeSgmntdCntrl = UISegmentedControl(items: [AppConstants.SharingEventsVC.sharedSgmntCntrlItemText, AppConstants.SharingEventsVC.receivedSgmntCntrlItemText])
         sharingModeSgmntdCntrl.backgroundColor = .white
         sharingModeSgmntdCntrl.overrideUserInterfaceStyle = .light
         
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "Poppins-Regular", size: 18) ?? UIFont.systemFont(ofSize: 16)
+            .font: UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 18, textStyle: .body)
         ]
         let selectedSegmAtributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "Poppins-Semibold", size: 18) ?? UIFont.systemFont(ofSize: 16)
+            .font: UIFont.customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 18, textStyle: .body)
         ]
         
         sharingModeSgmntdCntrl.setTitleTextAttributes(attributes, for: .normal)
@@ -176,7 +177,7 @@ extension SharingEventsVC {
     private func setupPresentEventsTable() {
         presentEventsTable.dataSource = self
         presentEventsTable.delegate = self
-        presentEventsTable.register(UITableViewCell.self, forCellReuseIdentifier: "DefaultCell")
+        presentEventsTable.register(UITableViewCell.self, forCellReuseIdentifier: AppConstants.Identifiers.defaultTableCell)
         presentEventsTable.backgroundColor = .clear
         
         view.addSubview(presentEventsTable)

@@ -30,7 +30,7 @@ class ShowQRViewController: UIViewController {
         guard !string.isEmpty else { return nil }
         let data = string.data(using: .utf8)
         let filter = CIFilter.qrCodeGenerator()
-        filter.setValue(data, forKey: "inputMessage")
+        filter.setValue(data, forKey: AppConstants.Keys.qrCodeInputMessageKey)
             
         if let qrCodeImage = filter.outputImage {
             let transformedImage = qrCodeImage.transformed(by: CGAffineTransform(scaleX: 10, y: 10))

@@ -41,7 +41,7 @@ class MainViewController: UIViewController {
     
     @objc private func showMenu(_ sender: UIButton) {
         let menuItems: [UIAction] = [
-            UIAction(title: "Shared events", image: UIImage(systemName: "tray.and.arrow.up.fill"), handler: { [weak self] _ in
+            UIAction(title: AppConstants.MainViewController.titleSharedEvents, image: UIImage(systemName: AppConstants.ImageNames.trayAndArrowUpFill), handler: { [weak self] _ in
                 self?.dismissKeyboard()
                 
                 let sharingEventsVC = SharingEventsVC()
@@ -51,7 +51,7 @@ class MainViewController: UIViewController {
                 self?.present(sharingEventsVC, animated: true, completion: nil)
             }),
             
-            UIAction(title: "Received events", image: UIImage(systemName: "tray.and.arrow.down.fill"), handler: { [weak self] _ in
+            UIAction(title: AppConstants.MainViewController.titleReceivedEvents, image: UIImage(systemName: AppConstants.ImageNames.trayAndArrowDownFill), handler: { [weak self] _ in
                 self?.dismissKeyboard()
                 
                 let sharingEventsVC = SharingEventsVC()
@@ -60,7 +60,7 @@ class MainViewController: UIViewController {
                 sharingEventsVC.selectedSharingMode = .received
                 self?.present(sharingEventsVC, animated: true, completion: nil)
             }),
-            UIAction(title: "Get event with QR", image: UIImage(systemName: "qrcode"), handler: { [weak self] _ in
+            UIAction(title: AppConstants.MainViewController.titleGetEventWithQR, image: UIImage(systemName: AppConstants.ImageNames.qrcode), handler: { [weak self] _ in
                 self?.dismissKeyboard()
                 
                 let QRScannerVC = QRScannerVC()
@@ -138,18 +138,18 @@ class MainViewController: UIViewController {
     
     private func showCalendarAccessAlert() {
         let alertController = UIAlertController(
-            title: "Access Denied",
-            message: "This app does not have access to your calendar. Please go to Settings and enable access.",
+            title: AppConstants.AlertMessages.titleAccessDenied,
+            message: AppConstants.AlertMessages.messageDoesntHaveAccessToCalendar,
             preferredStyle: .alert
         )
 
-        let settingsAction = UIAlertAction(title: "Settings", style: .default) { _ in
+        let settingsAction = UIAlertAction(title: AppConstants.ButtonTitles.settings, style: .default) { _ in
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }
         }
 
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let cancelAction = UIAlertAction(title: AppConstants.ButtonTitles.cancel, style: .cancel, handler: nil)
 
         alertController.addAction(settingsAction)
         alertController.addAction(cancelAction)
@@ -173,7 +173,7 @@ extension MainViewController {
     }
     
     private func setupMenuButton() {
-        let buttonImage = UIImage(systemName: "line.3.horizontal")
+        let buttonImage = UIImage(systemName: AppConstants.ImageNames.line3Horizontal)
         menuButton.setImage(buttonImage, for: .normal)
         menuButton.imageView?.contentMode = .scaleAspectFit
         menuButton.tintColor = UIColor.hex5856D6
@@ -182,17 +182,15 @@ extension MainViewController {
     }
     
     private func setupTitleLabel() {
-        titleLabel.accessibilityIdentifier = "titleLabel"
+        titleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 34, textStyle: .title1)
         titleLabel.textColor = .black
-        titleLabel.font = UIFont(name: "Poppins-SemiBold", size: 34)
         titleLabel.textAlignment = .center
-        titleLabel.text = "My Events"
+        titleLabel.text = AppConstants.MainViewController.titleLabel
         view.addSubview(titleLabel)
     }
     
     private func setupAddButton() {
-        addButton.accessibilityIdentifier = "addButton"
-        let buttonImage = UIImage(systemName: "plus")
+        let buttonImage = UIImage(systemName: AppConstants.ImageNames.plus)
         addButton.setImage(buttonImage, for: .normal)
         addButton.imageView?.contentMode = .scaleAspectFit
         addButton.tintColor = UIColor.hex5856D6
@@ -207,7 +205,10 @@ extension MainViewController {
         infoModeButtonsStackView.distribution = .equalSpacing
         infoModeButtonsStackView.spacing = 6
         
-        let buttonsTitles = ["Week", "Month", "Year", "Custom"]
+        let buttonsTitles = [AppConstants.ButtonTitles.week,
+                             AppConstants.ButtonTitles.month,
+                             AppConstants.ButtonTitles.year,
+                             AppConstants.ButtonTitles.custom]
         
         for title in buttonsTitles {
             let button = UIButton()
@@ -227,9 +228,14 @@ extension MainViewController {
         buttonName.setTitle(buttonTitle, for: .normal)
         buttonName.setTitleColor(UIColor.black, for: .normal)
         buttonName.setTitleColor(.white, for: .selected)
-        buttonName.titleLabel?.font = UIFont(name: "Poppins-Regular", size: 16)
+        buttonName.titleLabel?.font = UIFont(name: AppConstants.Fonts.poppinsRegular, size: 16)
         buttonName.titleLabel?.textAlignment = .center
         buttonName.layer.cornerRadius = 13
+        
+        if let customFont = UIFont(name: AppConstants.Fonts.poppinsRegular, size: 16) {
+            buttonName.titleLabel?.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: customFont)
+            buttonName.titleLabel?.adjustsFontForContentSizeCategory = true
+        }
         
         buttonName.sizeToFit()
         
