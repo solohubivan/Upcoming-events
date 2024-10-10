@@ -136,7 +136,8 @@ extension AddNewEventVC {
     
     private func setupTitleLabel() {
         titleLabel.textColor = .black
-        titleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 24, textStyle: .title1)
+        titleLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 24, textStyle: .title1)
+        titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -164,7 +165,8 @@ extension AddNewEventVC {
     
     private func setupStartDateLabel() {
         startDateLabel.text = AppConstants.AddNewEventVC.startDateLabelText
-        startDateLabel.setCustomFont(name: AppConstants.Fonts.poppinsMedium, size: 18, textStyle: .body)
+        startDateLabel.font = .customFont(name: AppConstants.Fonts.poppinsMedium, size: 18, textStyle: .body)
+        startDateLabel.adjustsFontForContentSizeCategory = true
         startDateLabel.textColor = .black
         startDateLabel.textAlignment = .left
         view.addSubview(startDateLabel)
@@ -178,7 +180,8 @@ extension AddNewEventVC {
     
     private func setupEndDateLabel() {
         endDateLabel.text = AppConstants.AddNewEventVC.endDateLabelText
-        endDateLabel.setCustomFont(name: AppConstants.Fonts.poppinsMedium, size: 18, textStyle: .body)
+        endDateLabel.font = .customFont(name: AppConstants.Fonts.poppinsMedium, size: 18, textStyle: .body)
+        endDateLabel.adjustsFontForContentSizeCategory = true
         endDateLabel.textColor = .black
         endDateLabel.textAlignment = .left
         view.addSubview(endDateLabel)
@@ -194,7 +197,7 @@ extension AddNewEventVC {
         addEventButton.setTitle(AppConstants.ButtonTitles.createNewEvent, for: .normal)
         addEventButton.setTitleColor(.white, for: .normal)
         addEventButton.titleLabel?.font = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 18, textStyle: .body)
-        addEventButton.backgroundColor = .hex5856D6
+        addEventButton.backgroundColor = .violet
         addEventButton.layer.cornerRadius = 6
         addEventButton.addTarget(self, action: #selector(addNewEvent), for: .touchUpInside)
         view.addSubview(addEventButton)

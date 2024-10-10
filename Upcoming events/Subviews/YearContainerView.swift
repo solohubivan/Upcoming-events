@@ -101,7 +101,8 @@ extension YearContainerView {
     private func setupTitleLabel() {
         currentYearLabel.text = ""
         currentYearLabel.textColor = .black
-        currentYearLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentYearLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentYearLabel.adjustsFontForContentSizeCategory = true
         currentYearLabel.textAlignment = .left
         self.addSubview(currentYearLabel)
     }

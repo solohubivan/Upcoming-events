@@ -67,7 +67,7 @@ class CustomTableViewCell: UITableViewCell {
     // MARK: - Setup UI
 
     private func setupCell() {
-        contentView.backgroundColor = UIColor.hexF2F2F2
+        contentView.backgroundColor = UIColor.tableCellsGray
         contentView.layer.cornerRadius = 3
         contentView.layer.masksToBounds = true
     }
@@ -82,7 +82,8 @@ class CustomTableViewCell: UITableViewCell {
     private func setupEventNameLabel() {
         eventNameLabel.text = ""
         eventNameLabel.textColor = .black
-        eventNameLabel.setCustomFont(name: AppConstants.Fonts.poppinsRegular, size: 17, textStyle: .body)
+        eventNameLabel.font = .customFont(name: AppConstants.Fonts.poppinsRegular, size: 17, textStyle: .body)
+        eventNameLabel.adjustsFontForContentSizeCategory = true
         eventNameLabel.textAlignment = .left
         
         self.addSubview(eventNameLabel)
@@ -90,8 +91,9 @@ class CustomTableViewCell: UITableViewCell {
     
     private func setupRemainingTimeLabel() {
         remainingTimeLabel.text = ""
-        remainingTimeLabel.textColor = UIColor.hex5856D6
-        remainingTimeLabel.setCustomFont(name: AppConstants.Fonts.poppinsRegular, size: 17, textStyle: .body)
+        remainingTimeLabel.textColor = UIColor.violet
+        remainingTimeLabel.font = .customFont(name: AppConstants.Fonts.poppinsRegular, size: 17, textStyle: .body)
+        remainingTimeLabel.adjustsFontForContentSizeCategory = true
         remainingTimeLabel.textAlignment = .right
         
         self.addSubview(remainingTimeLabel)

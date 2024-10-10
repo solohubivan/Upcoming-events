@@ -78,10 +78,10 @@ class MainViewController: UIViewController {
         guard let index = infoModesButtons.firstIndex(of: sender), let mode = CalendarInfoMode(rawValue: index) else { return }
         infoModesButtons.forEach {
             $0.isSelected = false
-            $0.backgroundColor = UIColor.hex767680
+            $0.backgroundColor = UIColor.buttonsGray
         }
         sender.isSelected = true
-        sender.backgroundColor = UIColor.hex5856D6
+        sender.backgroundColor = UIColor.violet
                
         updateVisibleContainer(for: mode)
     }
@@ -176,13 +176,14 @@ extension MainViewController {
         let buttonImage = UIImage(systemName: AppConstants.ImageNames.line3Horizontal)
         menuButton.setImage(buttonImage, for: .normal)
         menuButton.imageView?.contentMode = .scaleAspectFit
-        menuButton.tintColor = UIColor.hex5856D6
+        menuButton.tintColor = UIColor.violet
         menuButton.addTarget(self, action: #selector(showMenu(_:)), for: .touchUpInside)
         view.addSubview(menuButton)
     }
     
     private func setupTitleLabel() {
-        titleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 34, textStyle: .title1)
+        titleLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 34, textStyle: .title1)
+        titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.textColor = .black
         titleLabel.textAlignment = .center
         titleLabel.text = AppConstants.MainViewController.titleLabel
@@ -193,7 +194,7 @@ extension MainViewController {
         let buttonImage = UIImage(systemName: AppConstants.ImageNames.plus)
         addButton.setImage(buttonImage, for: .normal)
         addButton.imageView?.contentMode = .scaleAspectFit
-        addButton.tintColor = UIColor.hex5856D6
+        addButton.tintColor = UIColor.violet
         
         view.addSubview(addButton)
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)

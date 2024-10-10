@@ -9,11 +9,6 @@ import UIKit
 import EventKit
 import FSCalendar
 
-enum TimeMode {
-    case am
-    case pm
-}
-
 class CustomContainerView: UIView {
     
     private var scrollView = UIScrollView()
@@ -62,15 +57,18 @@ class CustomContainerView: UIView {
         
         var selectedDateTimeComponents = Calendar.current.dateComponents([.year, .month, .day], from: selectedDate)
         let selectedTimeComponents = Calendar.current.dateComponents([.hour, .minute], from: selectedTime)
+        
         selectedDateTimeComponents.hour = selectedTimeComponents.hour
         selectedDateTimeComponents.minute = selectedTimeComponents.minute
         
         guard let combinedDateTime = Calendar.current.date(from: selectedDateTimeComponents) else { return }
+        
+        eventsManager.updateTimeLabelAndSegmentControl(for: selectedTime, selectTimeButton: selectTimeButton, timeModeSegmCntrl: timeModeSegmCntrl)
+        
         let filteredEvents = filterEvents(after: combinedDateTime)
-
         self.tableData = filteredEvents
         presentEventsTable.reloadData()
-        
+
         if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene, let window = windowScene.windows.first {
             if let overlayView = window.viewWithTag(1001) {
                 overlayView.removeFromSuperview()
@@ -88,8 +86,35 @@ class CustomContainerView: UIView {
         calendar.setCurrentPage(previousMonth, animated: true)
     }
     
-    @objc private func updateTimeButton() {
-        selectTimeButton.setTitle(eventsManager.createClockTimeLabel(object: timeModeSegmCntrl), for: .normal)
+    @objc private func timeModeChanged() {
+        guard let timeString = selectTimeButton.titleLabel?.text else { return }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "hh:mm"
+        
+        guard let time = formatter.date(from: timeString) else { return }
+        var timeComponents = Calendar.current.dateComponents([.hour, .minute], from: time)
+        
+        if timeModeSegmCntrl.selectedSegmentIndex == 0 {
+            if timeComponents.hour ?? 0 >= 12 {
+                timeComponents.hour! -= 12
+            }
+        } else {
+            if timeComponents.hour ?? 0 < 12 {
+                timeComponents.hour! += 12
+            }
+        }
+
+        let selectedDate = calendar.selectedDate ?? Date()
+        var selectedDateTimeComponents = Calendar.current.dateComponents([.year, .month, .day], from: selectedDate)
+        selectedDateTimeComponents.hour = timeComponents.hour
+        selectedDateTimeComponents.minute = timeComponents.minute
+        
+        guard let combinedDateTime = Calendar.current.date(from: selectedDateTimeComponents) else { return }
+        let filteredEvents = filterEvents(after: combinedDateTime)
+        self.tableData = filteredEvents
+        presentEventsTable.reloadData()
     }
     
     @objc private func openTimePicker() {
@@ -138,10 +163,10 @@ class CustomContainerView: UIView {
 
         let monthAttributedString = NSAttributedString(string: monthString, attributes: [
             .font: UIFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20) ?? UIFont.systemFont(ofSize: 20),
-            .foregroundColor: UIColor.hex5856D6
+            .foregroundColor: UIColor.violet
         ])
 
-        let chevronImage = UIImage(systemName: AppConstants.ImageNames.chevronRight)?.withTintColor(.hex5856D6, renderingMode: .alwaysOriginal)
+        let chevronImage = UIImage(systemName: AppConstants.ImageNames.chevronRight)?.withTintColor(.violet, renderingMode: .alwaysOriginal)
         
         let chevronAttachment = NSTextAttachment()
         chevronAttachment.image = chevronImage
@@ -310,8 +335,9 @@ extension CustomContainerView {
 
     private func setupMonthLabel() {
         updateMonthLabel(for: calendar.currentPage)
-        currentMonthLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
-        currentMonthLabel.textColor = .hex5856D6
+        currentMonthLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentMonthLabel.adjustsFontForContentSizeCategory = true
+        currentMonthLabel.textColor = .violet
         currentMonthLabel.textAlignment = .left
         selectDataView.addSubview(currentMonthLabel)
     }
@@ -321,13 +347,13 @@ extension CustomContainerView {
         let rightButtonImage = UIImage(named: AppConstants.ImageNames.rightChevronAssets)
         rightButton.setImage(rightButtonImage, for: .normal)
         rightButton.imageView?.contentMode = .scaleAspectFit
-        rightButton.tintColor = .hex5856D6
+        rightButton.tintColor = .violet
         
         let leftButton = UIButton()
         let leftButtonImage = UIImage(named: AppConstants.ImageNames.leftChevronAssets)
         leftButton.setImage(leftButtonImage, for: .normal)
         leftButton.imageView?.contentMode = .scaleAspectFit
-        leftButton.tintColor = .hex5856D6
+        leftButton.tintColor = .violet
         
         selectDataView.addSubview(rightButton)
         selectDataView.addSubview(leftButton)
@@ -355,18 +381,19 @@ extension CustomContainerView {
         calendar.scrollEnabled = true
         calendar.placeholderType = .none
         calendar.headerHeight = 0
-        calendar.appearance.selectionColor = UIColor.hex5856D6
+        calendar.appearance.selectionColor = UIColor.violet
         calendar.appearance.weekdayFont = UIFont.customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 16, textStyle: .body)
-        calendar.appearance.weekdayTextColor = UIColor.hex3C3C434D
+        calendar.appearance.weekdayTextColor = UIColor.calendarDaysGray
         calendar.appearance.caseOptions = [.weekdayUsesUpperCase]
         calendar.appearance.titleFont = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 18, textStyle: .body)
-        calendar.appearance.titleDefaultColor = .hex5856D6
+        calendar.appearance.titleDefaultColor = .violet
         self.addSubview(calendar)
     }
     
     private func setupTimeTitleLabel() {
         timeTitleLabel.text = AppConstants.CustomContainerView.timetitleLabelText
-        timeTitleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .body)
+        timeTitleLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .body)
+        timeTitleLabel.adjustsFontForContentSizeCategory = true
         timeTitleLabel.textColor = .black
         selectDataView.addSubview(timeTitleLabel)
     }
@@ -374,9 +401,9 @@ extension CustomContainerView {
     private func setupTimeModeSegmCntrl() {
         timeModeSegmCntrl = UISegmentedControl(items: [AppConstants.CustomContainerView.amSgmntCtrlItemText, AppConstants.CustomContainerView.pmSgmntCtrlItemText])
         timeModeSegmCntrl.selectedSegmentIndex = 0
-        timeModeSegmCntrl.backgroundColor = .hex767680
+        timeModeSegmCntrl.backgroundColor = .buttonsGray
         timeModeSegmCntrl.overrideUserInterfaceStyle = .light
-        timeModeSegmCntrl.isUserInteractionEnabled = false
+        timeModeSegmCntrl.isUserInteractionEnabled = true
         
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 16, textStyle: .body)
@@ -388,15 +415,17 @@ extension CustomContainerView {
         timeModeSegmCntrl.setTitleTextAttributes(attributes, for: .normal)
         timeModeSegmCntrl.setTitleTextAttributes(selectedSegmAtributes, for: .selected)
         
+        timeModeSegmCntrl.addTarget(self, action: #selector(timeModeChanged), for: .valueChanged)
         selectDataView.addSubview(timeModeSegmCntrl)
     }
     
     private func setupSelectTimeButton() {
-        selectTimeButton.setTitle(eventsManager.createClockTimeLabel(object: timeModeSegmCntrl), for: .normal)
+        eventsManager.updateTimeLabelAndSegmentControl(for: timePicker.date, selectTimeButton: selectTimeButton, timeModeSegmCntrl: timeModeSegmCntrl)
+        
         selectTimeButton.titleLabel?.font = UIFont.customFont(name: AppConstants.Fonts.poppinsRegular, size: 22, textStyle: .body)
         selectTimeButton.setTitleColor(.black, for: .normal)
         selectTimeButton.layer.cornerRadius = 6
-        selectTimeButton.layer.backgroundColor = UIColor.hex767680.cgColor
+        selectTimeButton.layer.backgroundColor = UIColor.buttonsGray.cgColor
         
         selectTimeButton.addTarget(self, action: #selector(openTimePicker), for: .touchUpInside)
         selectDataView.addSubview(selectTimeButton)
@@ -405,7 +434,8 @@ extension CustomContainerView {
     private func setupCustomPeriodEventsLabel() {
         customPeriodEventsLabel.text = eventsManager.getCurrentPeriodLabel(for: .day, value: 1)
         customPeriodEventsLabel.textColor = .black
-        customPeriodEventsLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .body)
+        customPeriodEventsLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .body)
+        customPeriodEventsLabel.adjustsFontForContentSizeCategory = true
         customPeriodEventsLabel.textAlignment = .left
         self.addSubview(customPeriodEventsLabel)
     }

@@ -101,7 +101,9 @@ extension WeekContainerView {
     private func setupTitleLabel() {
         currentWeekLabel.text = ""
         currentWeekLabel.textColor = .black
-        currentWeekLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentWeekLabel.font = UIFont.customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentWeekLabel.adjustsFontForContentSizeCategory = true
+        
         currentWeekLabel.textAlignment = .left
         self.addSubview(currentWeekLabel)
     }

@@ -11,7 +11,6 @@
 		22048B472C6924BE00361F23 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B462C6924BE00361F23 /* UIView+Constraints.swift */; };
 		22048B492C6924D200361F23 /* UIViewController+KeyboardHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B482C6924D200361F23 /* UIViewController+KeyboardHandling.swift */; };
 		22048B4B2C6924EB00361F23 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */; };
-		22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */; };
 		22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */; };
 		2226D5052CA3570E003C4213 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 2226D5042CA3570E003C4213 /* FSCalendar */; };
 		223429962C7B56D900D906E4 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223429952C7B56D900D906E4 /* CustomTableViewCell.swift */; };
@@ -61,7 +60,6 @@
 		22048B462C6924BE00361F23 /* UIView+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
 		22048B482C6924D200361F23 /* UIViewController+KeyboardHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+KeyboardHandling.swift"; sourceTree = "<group>"; };
 		22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
-		22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+CustomFont.swift"; sourceTree = "<group>"; };
 		22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+CustomFont.swift"; sourceTree = "<group>"; };
 		223429952C7B56D900D906E4 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
 		224110FD2C7F4ED6006372BA /* EventsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsManager.swift; sourceTree = "<group>"; };
@@ -143,7 +141,6 @@
 				22048B462C6924BE00361F23 /* UIView+Constraints.swift */,
 				22048B482C6924D200361F23 /* UIViewController+KeyboardHandling.swift */,
 				22048B4A2C6924EB00361F23 /* UIColor+Extension.swift */,
-				22048B4C2C69250F00361F23 /* UILabel+CustomFont.swift */,
 				22048B4E2C69253700361F23 /* UIFont+CustomFont.swift */,
 				22B3729F2C8396B5005BA993 /* UIView+TouchThroughView.swift */,
 			);
@@ -393,7 +390,6 @@
 				22641B3C2C7A25E5007F1C39 /* CustomContainerView.swift in Sources */,
 				224110FE2C7F4ED6006372BA /* EventsManager.swift in Sources */,
 				228CC1802C9D694800CFB4A2 /* UIView+FindViewController.swift in Sources */,
-				22048B4D2C69250F00361F23 /* UILabel+CustomFont.swift in Sources */,
 				22541E882C7DEBE400EA124F /* EventModel.swift in Sources */,
 				22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */,
 				22B372A02C8396B5005BA993 /* UIView+TouchThroughView.swift in Sources */,

@@ -148,7 +148,8 @@ extension SharingEventsVC {
     
     private func setupTitleLabel() {
         titleLabel.textColor = .black
-        titleLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 24, textStyle: .title1)
+        titleLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 24, textStyle: .title1)
+        titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.textAlignment = .center
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping

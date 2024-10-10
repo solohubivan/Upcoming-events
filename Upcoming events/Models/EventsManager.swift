@@ -19,7 +19,7 @@ class EventsManager {
     private let eventStore = EKEventStore()
     
     // MARK: - Private methods
-    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private func saveReceivedEvents() {
         if let data = try? JSONEncoder().encode(receivedEvents) {
             UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsReceivedEventsKey)
@@ -66,9 +66,32 @@ class EventsManager {
         events.removeAll { $0.endDate < now }
         saveAddedEvents()
     }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private func updateSelectedTimeLabel(for time: Date, selectTimeButton: UIButton) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "hh:mm"
+            
+        let formattedTime = formatter.string(from: time)
+        selectTimeButton.setTitle(formattedTime, for: .normal)
+    }
+
+    private func updateSegmentControl(for time: Date, timeModeSegmCntrl: UISegmentedControl) {
+        let hourFormatter = DateFormatter()
+        hourFormatter.locale = Locale(identifier: "en_US_POSIX")
+        hourFormatter.dateFormat = "a"
+            
+        let amPmString = hourFormatter.string(from: time)
+        
+        if amPmString == "AM" {
+            timeModeSegmCntrl.selectedSegmentIndex = 0
+        } else {
+            timeModeSegmCntrl.selectedSegmentIndex = 1
+        }
+    }
     
     // MARK: - Publick methods
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func getEvents(for timeInterval: Calendar.Component, value: Int) -> [EventModel] {
         loadAddedEvents()
         removePastEvents()
@@ -120,7 +143,7 @@ class EventsManager {
         receivedEvents.append(event)
         saveReceivedEvents()
     }
-    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func fetchEvents(for timeInterval: Calendar.Component, value: Int, completion: @escaping () -> Void) {
         let startDate = Date()
         let endDate = Calendar.current.date(byAdding: timeInterval, value: value, to: startDate)
@@ -216,26 +239,8 @@ class EventsManager {
         }
     }
     
-    func createClockTimeLabel(object: UISegmentedControl) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "hh : mm"
-            
-        let currentTime = formatter.string(from: Date())
-            
-        let hourFormatter = DateFormatter()
-        hourFormatter.locale = Locale(identifier: "en_US_POSIX")
-        hourFormatter.dateFormat = "a"
-        let amPmString = hourFormatter.string(from: Date())
-
-        let timeMode: TimeMode = amPmString == "AM" ? .am : .pm
-        switch timeMode {
-        case .am:
-            object.selectedSegmentIndex = 0
-        case .pm:
-            object.selectedSegmentIndex = 1
-        }
-        
-        return currentTime
+    func updateTimeLabelAndSegmentControl(for time: Date, selectTimeButton: UIButton, timeModeSegmCntrl: UISegmentedControl) {
+        updateSelectedTimeLabel(for: time, selectTimeButton: selectTimeButton)
+        updateSegmentControl(for: time, timeModeSegmCntrl: timeModeSegmCntrl)
     }
 }

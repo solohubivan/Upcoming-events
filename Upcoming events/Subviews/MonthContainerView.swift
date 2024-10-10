@@ -101,7 +101,8 @@ extension MonthContainerView {
     private func setupTitleLabel() {
         currentMonthLabel.text = ""
         currentMonthLabel.textColor = .black
-        currentMonthLabel.setCustomFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentMonthLabel.font = .customFont(name: AppConstants.Fonts.poppinsSemiBold, size: 20, textStyle: .title1)
+        currentMonthLabel.adjustsFontForContentSizeCategory = true
         currentMonthLabel.textAlignment = .left
         self.addSubview(currentMonthLabel)
     }
