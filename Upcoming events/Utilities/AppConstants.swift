@@ -59,9 +59,6 @@ enum AppConstants {
     
     enum Keys {
         static let qrCodeInputMessageKey = "inputMessage"
-        static let userDefaultsReceivedEventsKey = "receivedEvents"
-        static let userDefaultsSharedEventsKey = "sharedEvents"
-        static let userDefaultsAddedEventsKey = "addedEvents"
     }
     
     enum MainViewController {

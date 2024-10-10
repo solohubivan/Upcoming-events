@@ -39,20 +39,19 @@ class AddNewEventVC: UIViewController {
             showAlertForEmptyTitle()
             return
         }
-        
+
         if endDatePicker.date <= startDatePicker.date {
             let newEndDate = Calendar.current.date(byAdding: .minute, value: 15, to: startDatePicker.date)
             endDatePicker.date = newEndDate ?? startDatePicker.date
         }
-            
+
         let newEvent = EventModel(
             title: eventTitle,
             startDate: startDatePicker.date,
             endDate: endDatePicker.date
         )
-        
+
         eventsManager?.addEvent(newEvent)
-        
         dismissKeyboard()
         eventTitleTextField.text = ""
         setInitialDatePickers()

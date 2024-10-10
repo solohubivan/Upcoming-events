@@ -1,5 +1,5 @@
 //
-//  CalendarManager.swift
+//  EventsManager.swift
 //  Upcoming events
 //
 //  Created by Ivan Solohub on 28.08.2024.
@@ -8,6 +8,7 @@
 import Foundation
 import EventKit
 import UIKit
+import CoreData
 
 class EventsManager {
     
@@ -19,54 +20,70 @@ class EventsManager {
     private let eventStore = EKEventStore()
     
     // MARK: - Private methods
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    private func saveReceivedEvents() {
-        if let data = try? JSONEncoder().encode(receivedEvents) {
-            UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsReceivedEventsKey)
-        }
-    }
     
-    private func loadReceivedEvents() {
-        if let data = UserDefaults.standard.data(forKey: AppConstants.Keys.userDefaultsReceivedEventsKey),
-           let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
-            receivedEvents = savedEvents
-        }
+    private func saveEventToData<T: NSManagedObject>(_ eventModel: EventModel, entityType: T.Type) {
+        let newEvent = T(context: CoreDataStack.shared.context)
+        
+        newEvent.setValue(eventModel.title, forKey: "title")
+        newEvent.setValue(eventModel.startDate, forKey: "startDate")
+        newEvent.setValue(eventModel.endDate, forKey: "endDate")
+        
+        CoreDataStack.shared.saveContext()
     }
-    
-    private func saveSharedEvents() {
-        if let data = try? JSONEncoder().encode(sharedEvents) {
-            UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsSharedEventsKey)
+
+    private func loadEventsFromData<T: NSManagedObject>(entityType: T.Type, into array: inout [EventModel], removePastEvents: Bool = false) {
+        let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entityType))
+
+        do {
+            let savedEvents = try CoreDataStack.shared.context.fetch(fetchRequest)
+            array = savedEvents.compactMap { event in
+                guard let title = event.value(forKey: "title") as? String,
+                      let startDate = event.value(forKey: "startDate") as? Date,
+                      let endDate = event.value(forKey: "endDate") as? Date else {
+                    return nil
+                }
+                return EventModel(title: title, startDate: startDate, endDate: endDate)
+            }
+        } catch {
+            
         }
     }
 
-    private func loadSharedEvents() {
-        if let data = UserDefaults.standard.data(forKey: AppConstants.Keys.userDefaultsSharedEventsKey),
-            let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
-            sharedEvents = savedEvents
-        }
-    }
-    
-    private func saveAddedEvents() {
-        if let data = try? JSONEncoder().encode(addedEvents) {
-            UserDefaults.standard.set(data, forKey: AppConstants.Keys.userDefaultsAddedEventsKey)
-        }
-    }
-
-    private func loadAddedEvents() {
-        if let data = UserDefaults.standard.data(forKey: AppConstants.Keys.userDefaultsAddedEventsKey),
-            let savedEvents = try? JSONDecoder().decode([EventModel].self, from: data) {
-            addedEvents = savedEvents
-        }
-        removePastEvents()
-    }
-    
     private func removePastEvents() {
         let now = Date()
+
+        let fetchRequest: NSFetchRequest<AddedEvent> = AddedEvent.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "endDate < %@", now as NSDate)
+
+        do {
+            let pastEvents = try CoreDataStack.shared.context.fetch(fetchRequest)
+            for event in pastEvents {
+                CoreDataStack.shared.context.delete(event)
+            }
+            CoreDataStack.shared.saveContext()
+        } catch {
+
+        }
+        
         addedEvents.removeAll { $0.endDate < now }
         events.removeAll { $0.endDate < now }
-        saveAddedEvents()
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    private func removeEventFromData<T: NSManagedObject>(_ event: EventModel, entityType: T.Type) {
+        let fetchRequest = NSFetchRequest<T>(entityName: String(describing: entityType))
+        fetchRequest.predicate = NSPredicate(format: "title == %@ AND startDate == %@ AND endDate == %@", event.title, event.startDate as NSDate, event.endDate as NSDate)
+
+        do {
+            let events = try CoreDataStack.shared.context.fetch(fetchRequest)
+            if let eventToDelete = events.first {
+                CoreDataStack.shared.context.delete(eventToDelete)
+                CoreDataStack.shared.saveContext()
+            }
+        } catch {
+            
+        }
+    }
+    
     private func updateSelectedTimeLabel(for time: Date, selectTimeButton: UIButton) {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -91,9 +108,9 @@ class EventsManager {
     }
     
     // MARK: - Publick methods
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     func getEvents(for timeInterval: Calendar.Component, value: Int) -> [EventModel] {
-        loadAddedEvents()
+        loadEventsFromData(entityType: AddedEvent.self, into: &addedEvents)
         removePastEvents()
 
         let startDate = Date()
@@ -109,41 +126,43 @@ class EventsManager {
         return combinedEvents
     }
     
-    func getReceivedEvents() -> [EventModel] {
-        loadReceivedEvents()
-        return receivedEvents
-    }
-    
-    func removeReceivedEvent(at index: Int) {
-        receivedEvents.remove(at: index)
-        saveReceivedEvents()
-    }
-    
-    func getSharedEvents() -> [EventModel] {
-        loadSharedEvents()
-        return sharedEvents
-    }
-    
-    func removeSharedEvent(at index: Int) {
-        sharedEvents.remove(at: index)
-        saveSharedEvents()
-    }
-    
     func addEvent(_ event: EventModel) {
         addedEvents.append(event)
-        saveAddedEvents()
+        saveEventToData(event, entityType: AddedEvent.self)
     }
     
     func addSharedEvent(_ event: EventModel) {
         sharedEvents.append(event)
-        saveSharedEvents()
+        saveEventToData(event, entityType: SharedEvent.self)
     }
     
     func addReceivedEvent(_ event: EventModel) {
         receivedEvents.append(event)
-        saveReceivedEvents()
+        saveEventToData(event, entityType: ReceivedEvent.self)
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    func getSharedEvents() -> [EventModel] {
+        loadEventsFromData(entityType: SharedEvent.self, into: &sharedEvents)
+        return sharedEvents
+    }
+    
+    func getReceivedEvents() -> [EventModel] {
+        loadEventsFromData(entityType: ReceivedEvent.self, into: &receivedEvents)
+        return receivedEvents
+    }
+    
+    func removeSharedEvent(at index: Int) {
+        let event = sharedEvents[index]
+        sharedEvents.remove(at: index)
+        removeEventFromData(event, entityType: SharedEvent.self)
+    }
+    
+    func removeReceivedEvent(at index: Int) {
+        let event = receivedEvents[index]
+        receivedEvents.remove(at: index)
+        removeEventFromData(event, entityType: ReceivedEvent.self)
+    }
+    
     func fetchEvents(for timeInterval: Calendar.Component, value: Int, completion: @escaping () -> Void) {
         let startDate = Date()
         let endDate = Calendar.current.date(byAdding: timeInterval, value: value, to: startDate)
@@ -158,7 +177,8 @@ class EventsManager {
             let event = EventModel(title: ekEvent.title ?? AppConstants.AlertMessages.noTitle, startDate: ekEvent.startDate, endDate: ekEvent.endDate)
             events.append(event)
         }
-        loadAddedEvents()
+        
+        loadEventsFromData(entityType: AddedEvent.self, into: &addedEvents)
         removePastEvents()
         completion()
     }

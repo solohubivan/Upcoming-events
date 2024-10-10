@@ -34,6 +34,8 @@
 		228CC1802C9D694800CFB4A2 /* UIView+FindViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CC17F2C9D692A00CFB4A2 /* UIView+FindViewController.swift */; };
 		228CC1822C9D830100CFB4A2 /* ShareUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CC1812C9D82F500CFB4A2 /* ShareUtility.swift */; };
 		228CC1842C9DB8C200CFB4A2 /* SharingEventsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228CC1832C9DB83500CFB4A2 /* SharingEventsVC.swift */; };
+		22ABF6132CB8429700FD6965 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22ABF6122CB8428500FD6965 /* CoreDataStack.swift */; };
+		22ABF6162CB844AD00FD6965 /* EventsModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 22ABF6142CB844AD00FD6965 /* EventsModel.xcdatamodeld */; };
 		22B372A02C8396B5005BA993 /* UIView+TouchThroughView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B3729F2C8396B5005BA993 /* UIView+TouchThroughView.swift */; };
 		22C3DC2B2C91E9C3009C203B /* AddNewEventVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C3DC2A2C91E9C3009C203B /* AddNewEventVC.swift */; };
 /* End PBXBuildFile section */
@@ -86,6 +88,8 @@
 		228CC17F2C9D692A00CFB4A2 /* UIView+FindViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+FindViewController.swift"; sourceTree = "<group>"; };
 		228CC1812C9D82F500CFB4A2 /* ShareUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareUtility.swift; sourceTree = "<group>"; };
 		228CC1832C9DB83500CFB4A2 /* SharingEventsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingEventsVC.swift; sourceTree = "<group>"; };
+		22ABF6122CB8428500FD6965 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		22ABF6152CB844AD00FD6965 /* EventsModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EventsModel.xcdatamodel; sourceTree = "<group>"; };
 		22B3729F2C8396B5005BA993 /* UIView+TouchThroughView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+TouchThroughView.swift"; sourceTree = "<group>"; };
 		22C3DC2A2C91E9C3009C203B /* AddNewEventVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewEventVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -129,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				228CC1812C9D82F500CFB4A2 /* ShareUtility.swift */,
+				22ABF6122CB8428500FD6965 /* CoreDataStack.swift */,
 				22048B442C69249D00361F23 /* AppConstants.swift */,
 			);
 			path = Utilities;
@@ -195,6 +200,7 @@
 			children = (
 				224110FD2C7F4ED6006372BA /* EventsManager.swift */,
 				22641B3E2C7A2B40007F1C39 /* CalendarInfoMode.swift */,
+				22ABF6142CB844AD00FD6965 /* EventsModel.xcdatamodeld */,
 				22541E872C7DEBE400EA124F /* EventModel.swift */,
 			);
 			path = Models;
@@ -388,12 +394,14 @@
 				227D019D2C68F12600ADF63F /* SceneDelegate.swift in Sources */,
 				22048B4F2C69253700361F23 /* UIFont+CustomFont.swift in Sources */,
 				22641B3C2C7A25E5007F1C39 /* CustomContainerView.swift in Sources */,
+				22ABF6132CB8429700FD6965 /* CoreDataStack.swift in Sources */,
 				224110FE2C7F4ED6006372BA /* EventsManager.swift in Sources */,
 				228CC1802C9D694800CFB4A2 /* UIView+FindViewController.swift in Sources */,
 				22541E882C7DEBE400EA124F /* EventModel.swift in Sources */,
 				22641B3F2C7A2B40007F1C39 /* CalendarInfoMode.swift in Sources */,
 				22B372A02C8396B5005BA993 /* UIView+TouchThroughView.swift in Sources */,
 				228A7CAE2CA2C75500016C05 /* GenerateQRViewController.swift in Sources */,
+				22ABF6162CB844AD00FD6965 /* EventsModel.xcdatamodeld in Sources */,
 				22048B452C69249D00361F23 /* AppConstants.swift in Sources */,
 				228CC1822C9D830100CFB4A2 /* ShareUtility.swift in Sources */,
 			);
@@ -752,6 +760,19 @@
 			productName = FSCalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		22ABF6142CB844AD00FD6965 /* EventsModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				22ABF6152CB844AD00FD6965 /* EventsModel.xcdatamodel */,
+			);
+			currentVersion = 22ABF6152CB844AD00FD6965 /* EventsModel.xcdatamodel */;
+			path = EventsModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 227D018F2C68F12600ADF63F /* Project object */;
 }
